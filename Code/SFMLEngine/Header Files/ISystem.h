@@ -11,7 +11,7 @@ public:
 	virtual bool DoesEntityMatch(std::shared_ptr<Entity> entity) = 0;
 	virtual void Update(Engine* engine, float dt);
 	virtual void Init(Engine* engine);
-	void AddEntity(std::shared_ptr<Entity> entity);
+	virtual void AddEntity(std::shared_ptr<Entity> entity);
 	void RemoveEntity(std::shared_ptr<Entity> entity);
 
 protected:

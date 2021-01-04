@@ -7,7 +7,7 @@ class AudioComponent : public IComponent
 {
 public:
 	//Constructor
-	AudioComponent();
+	AudioComponent(const std::string fileName, const bool isLooping);
 	~AudioComponent();
 
 	//Copy assignment constructor
@@ -22,8 +22,17 @@ public:
 	std::shared_ptr<sf::SoundBuffer> m_pSoundBuffer;
 	std::shared_ptr<sf::Sound> m_pSound;
 
+	bool AudioIsFinished();
+	void PlayAudio();
+	void PauseAudio();
+	void StopAudio();
+
+
 private:
 	const float GetAudioLength();
-	float m_PlayedTime = 0;
 	void CalculatePlayedTime(float dt);
+
+	float m_PlayedTime = 0;
+	const std::string m_FileName;
+	const bool m_IsLooping;
 };

@@ -9,7 +9,10 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 	m_Window = std::make_shared<Window>(width, height, text, fullscreen);
 	m_Time = std::make_unique<Time>();
 	m_RenderSystem = std::make_shared<RenderSystem>();
-	AddSystem(m_RenderSystem);
+	// TODO Make threads work
+	AddSystem(m_RenderSystem, eThreadImportance::render);
+	m_LazyThread = std::thread(&Engine::UpdateSystems, m_LazySystems);
+	m_RenderThread = std::thread(&Engine::UpdateSystems, m_RenderSystems);
 }
 
 Engine::~Engine()
@@ -28,22 +31,26 @@ void Engine::Update()
 
 	m_Time->Restart();
 
-	const float dt = 1 / 60.0f;
 
 	const float elapsedTime = GetElapsedTimeAsSeconds();
 
 	m_AccumulatedTime += elapsedTime;
-	while (m_AccumulatedTime >= dt)
+	UpdateSystems(m_DirectSystems);
+	//update all events
+	EventManager::GetInstance().Update();
+	//at the end of the update, decrement the accumulator by the fixed time
+	m_AccumulatedTime -= m_dt;
+}
+
+void Engine::UpdateSystems(std::vector<std::shared_ptr<ISystem>>& systems)
+{
+	while (m_AccumulatedTime >= m_dt)
 	{
 		//update all systems
-		for (std::shared_ptr<ISystem> system : m_Systems)
+		for (std::shared_ptr<ISystem> system : systems)
 		{
-			system->Update(this, dt);
+			system->Update(this, m_dt);
 		}
-		//update all events
-		EventManager::GetInstance().Update();
-		//at the end of the update, decrement the accumulator by the fixed time
-		m_AccumulatedTime -= dt;
 	}
 }
 
@@ -82,11 +89,30 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 	}
 	m_Entities.push_back(entity);
 
-	for (std::shared_ptr<ISystem> system : m_Systems)
+	for (std::shared_ptr<ISystem> system : m_DirectSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
 			system->AddEntity(entity);
+			return;
+		}
+	}
+
+	for (std::shared_ptr<ISystem> system : m_LazySystems)
+	{
+		if (system->DoesEntityMatch(entity))
+		{
+			system->AddEntity(entity);
+			return;
+		}
+	}
+
+	for (std::shared_ptr<ISystem> system : m_RenderSystems)
+	{
+		if (system->DoesEntityMatch(entity))
+		{
+			system->AddEntity(entity);
+			return;
 		}
 	}
 }
@@ -100,19 +126,53 @@ void Engine::RemoveEntity(std::shared_ptr<Entity> entity)
 	}
 	m_Entities.erase(entityIterator);
 
-	for (std::shared_ptr<ISystem> system : m_Systems)
+	for (std::shared_ptr<ISystem> system : m_DirectSystems)
 	{
 		system->RemoveEntity(entity);
+		return;
+	}
+
+	for (std::shared_ptr<ISystem> system : m_LazySystems)
+	{
+		system->RemoveEntity(entity);
+		return;
+	}
+
+	for (std::shared_ptr<ISystem> system : m_RenderSystems)
+	{
+		system->RemoveEntity(entity);
+		return;
 	}
 }
 
-void Engine::AddSystem(std::shared_ptr<ISystem> system)
+void Engine::AddSystem(std::shared_ptr<ISystem> system, eThreadImportance importance)
 {
-	if (std::find(m_Systems.begin(), m_Systems.end(), system) != m_Systems.end())
+	switch (importance)
 	{
-		return;
+	case direct:
+		if (std::find(m_DirectSystems.begin(), m_DirectSystems.end(), system) != m_DirectSystems.end())
+		{
+			return;
+		}
+		m_DirectSystems.push_back(system);
+		break;
+	case lazy:
+		if (std::find(m_LazySystems.begin(), m_LazySystems.end(), system) != m_LazySystems.end())
+		{
+			return;
+		}
+		m_LazySystems.push_back(system);
+		break;
+	case render:
+		if (std::find(m_RenderSystems.begin(), m_RenderSystems.end(), system) != m_RenderSystems.end())
+		{
+			return;
+		}
+		m_RenderSystems.push_back(system);
+		break;
+	default:
+		break;
 	}
-	m_Systems.push_back(system);
 
 	for (std::shared_ptr<Entity> entity : m_Entities)
 	{
@@ -127,12 +187,24 @@ void Engine::AddSystem(std::shared_ptr<ISystem> system)
 
 void Engine::RemoveSystem(std::shared_ptr<ISystem> system)
 {
-	std::vector<std::shared_ptr<ISystem>>::iterator systemIterator = std::find(m_Systems.begin(), m_Systems.end(), system);
-	if (systemIterator == m_Systems.end())
+	std::vector<std::shared_ptr<ISystem>>::iterator systemIterator = std::find(m_DirectSystems.begin(), m_DirectSystems.end(), system);
+	if (systemIterator == m_DirectSystems.end())
 	{
+		std::vector<std::shared_ptr<ISystem>>::iterator systemIterator = std::find(m_LazySystems.begin(), m_LazySystems.end(), system);
+		if (systemIterator == m_LazySystems.end())
+		{
+			std::vector<std::shared_ptr<ISystem>>::iterator systemIterator = std::find(m_RenderSystems.begin(), m_RenderSystems.end(), system);
+			if (systemIterator == m_RenderSystems.end())
+			{
+				return;
+			}
+			m_RenderSystems.erase(systemIterator);
+			return;
+		}
+		m_LazySystems.erase(systemIterator);
 		return;
 	}
-	m_Systems.erase(systemIterator);
+	m_DirectSystems.erase(systemIterator);
 }
 
 const std::shared_ptr<Window> Engine::GetWindow() const

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <thread>
 #include "Window.h"
 #include "InputHelper.h"
 #include "Time.h"
@@ -10,6 +11,13 @@
 #include "Entity.h"
 #include "ISystem.h"
 #include "RenderSystem.h"
+
+enum eThreadImportance : std::int16_t
+{
+	direct,
+	lazy,
+	render
+};
 
 class Engine
 {
@@ -21,6 +29,8 @@ public:
 	//Window handling
 	const bool IsRunning() const { return m_IsRunning; }
 	void Update();
+
+	void UpdateSystems(std::vector<std::shared_ptr<ISystem>>& systems);
 
 	//Rendering
 	void Draw();
@@ -36,7 +46,7 @@ public:
 	//ECS
 	void AddEntity(std::shared_ptr<Entity> entity);
 	void RemoveEntity(std::shared_ptr<Entity> entity);
-	void AddSystem(std::shared_ptr<ISystem> system);
+	void AddSystem(std::shared_ptr<ISystem> system, eThreadImportance importance);
 	void RemoveSystem(std::shared_ptr<ISystem> entity);
 
 	//Window
@@ -56,5 +66,12 @@ private:
 	//Entities
 	std::vector <std::shared_ptr<Entity>> m_Entities;
 	//Systems
-	std::vector <std::shared_ptr<ISystem>> m_Systems;
+	std::vector <std::shared_ptr<ISystem>> m_DirectSystems;
+	std::vector <std::shared_ptr<ISystem>> m_LazySystems;
+	std::vector <std::shared_ptr<ISystem>> m_RenderSystems;
+
+	std::thread m_LazyThread;
+	std::thread m_RenderThread;
+
+	const float m_dt = 1/60.f;
 };

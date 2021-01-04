@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "IComponent.h"
+#include "GameDevAndBeyond/Header Files/AudioComponent.h"
 
 class Entity
 {
@@ -24,6 +25,20 @@ public:
 
 		std::shared_ptr<T> component = std::make_shared<T>();
 		m_Components.push_back(std::shared_ptr<T>(component));
+		return component;
+	}
+
+	std::shared_ptr<AudioComponent> AddComponent(const std::string fileName, const bool isLooping)
+	{
+		//check if the Component is already inside of the array
+		std::shared_ptr<AudioComponent> foundComponent = GetComponent<AudioComponent>();
+		if (foundComponent != nullptr)
+		{
+			return foundComponent;
+		}
+
+		std::shared_ptr<AudioComponent> component = std::make_shared<AudioComponent>(fileName, isLooping);
+		m_Components.push_back(std::shared_ptr<AudioComponent>(component));
 		return component;
 	}
 

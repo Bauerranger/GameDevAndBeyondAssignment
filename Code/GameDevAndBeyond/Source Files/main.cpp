@@ -26,7 +26,7 @@
 //#include "MapSystem.h"
 //#include "EnemySystem.h"
 #include "../Header Files/AudioComponent.h"
-#include "../Header Files/AudioSystem.h"
+#include "SFMLEngine/Header Files/AudioSystem.h"
 #include <ctime>
 #include <algorithm>
 #include <vector>
@@ -44,8 +44,6 @@ int EngineMain()
 	int height = 900;
 	std::shared_ptr<Engine> engine = std::make_shared<Engine>(width, height, "Fluffy Bunny Overdrive", false);
 
-	std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>();
-	engine->AddSystem(audioSystem);
 
 	//Normally this all would be defined in data which is somehow loaded during runtime
 	/*std::shared_ptr<PhysicSystem> physicSystem = std::make_shared<PhysicSystem>();
@@ -62,9 +60,12 @@ int EngineMain()
 
 	std::shared_ptr<MapSystem> mapSystem = std::make_shared<MapSystem>();
 	engine->AddSystem(mapSystem);*/
+	std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>();
+	//engine->AddSystem(audioSystem, eThreadImportance::lazy);
+	engine->AddSystem(audioSystem);
 	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-	std::shared_ptr<AudioComponent> comp = entity->AddComponent<AudioComponent>();
-	audioSystem->StartAudio("../Assets/Lunar_FieldToTomorrow.ogg", comp, true);
+	std::shared_ptr<AudioComponent> comp = entity->AddComponent("../Assets/Lunar_FieldToTomorrow.ogg", false);
+	audioSystem->AddEntity(entity);
 	while (engine->IsRunning())
 	{
 		engine->Update();

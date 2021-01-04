@@ -28,6 +28,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/Code)
 
 set(ENGINE_SOURCE_PATH Code/${ENGINE_PROJECT_NAME})
 set(ENGINE_SOURCE_FILES 
+"${ENGINE_SOURCE_PATH}/Header Files/AudioSystem.h"
 "${ENGINE_SOURCE_PATH}/Header Files/Engine.h"
 "${ENGINE_SOURCE_PATH}/Header Files/Entity.h"
 "${ENGINE_SOURCE_PATH}/Header Files/EventManager.h"
@@ -43,6 +44,7 @@ set(ENGINE_SOURCE_FILES
 "${ENGINE_SOURCE_PATH}/Header Files/TextureManager.h"
 "${ENGINE_SOURCE_PATH}/Header Files/Time.h"
 "${ENGINE_SOURCE_PATH}/Header Files/Window.h"
+"${ENGINE_SOURCE_PATH}/Source Files/AudioSystem.cpp"
 "${ENGINE_SOURCE_PATH}/Source Files/Engine.cpp"
 "${ENGINE_SOURCE_PATH}/Source Files/EventManager.cpp"
 "${ENGINE_SOURCE_PATH}/Source Files/InputHelper.cpp"
@@ -61,9 +63,8 @@ set(ENGINE_SOURCE_FILES
 set(GAME_SOURCE_PATH Code/${GAME_PROJECT_NAME})
 set(GAME_SOURCE_FILES 
 "${GAME_SOURCE_PATH}/Header Files/AudioComponent.h"
-"${GAME_SOURCE_PATH}/Header Files/AudioSystem.h"
+"${GAME_SOURCE_PATH}/Header Files/Events.h"
 "${GAME_SOURCE_PATH}/Source Files/AudioComponent.cpp"
-"${GAME_SOURCE_PATH}/Source Files/AudioSystem.cpp"
 "${GAME_SOURCE_PATH}/Source Files/main.cpp"
 )
 
