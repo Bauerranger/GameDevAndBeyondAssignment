@@ -2,6 +2,7 @@
 #include "../Header Files/TextureManager.h"
 #include "../Header Files/EventManager.h"
 #include <algorithm>
+#include <iostream>
 
 Engine::Engine(int width, int height, std::string text, bool fullscreen)
 {
@@ -11,8 +12,9 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 	m_RenderSystem = std::make_shared<RenderSystem>();
 	// TODO Make threads work
 	AddSystem(m_RenderSystem, eThreadImportance::render);
-	m_LazyThread = std::thread(&Engine::UpdateSystems, m_LazySystems);
-	m_RenderThread = std::thread(&Engine::UpdateSystems, m_RenderSystems);
+	std::thread m_LazyThread(&Engine::UpdateLazySystems, this);
+	std::thread m_RenderThread(&Engine::UpdateRenderSystems, this);
+	// TODO make lazy and render vector of systems and entities mutex
 }
 
 Engine::~Engine()
@@ -35,21 +37,55 @@ void Engine::Update()
 	const float elapsedTime = GetElapsedTimeAsSeconds();
 
 	m_AccumulatedTime += elapsedTime;
-	UpdateSystems(m_DirectSystems);
-	//update all events
-	EventManager::GetInstance().Update();
-	//at the end of the update, decrement the accumulator by the fixed time
-	m_AccumulatedTime -= m_dt;
-}
+	// TODO: Lock variable
+	//m_AccumulatedTimeLazy = m_AccumulatedTime;
+	//m_AccumulatedTimeRender = m_AccumulatedTime;
 
-void Engine::UpdateSystems(std::vector<std::shared_ptr<ISystem>>& systems)
-{
 	while (m_AccumulatedTime >= m_dt)
 	{
-		//update all systems
-		for (std::shared_ptr<ISystem> system : systems)
+		for (std::shared_ptr<ISystem> system : m_DirectSystems)
 		{
 			system->Update(this, m_dt);
+		}
+		//update all events
+		EventManager::GetInstance().Update();
+		//at the end of the update, decrement the accumulator by the fixed time
+		m_AccumulatedTime -= m_dt;
+	}
+}
+
+void Engine::UpdateLazySystems()
+{
+	std::cout << "Initializing thread 1" << std::endl;
+	while (m_IsRunning)
+	{
+		while (m_AccumulatedTime >= m_dt)
+		{
+			//update all systems
+			for (std::shared_ptr<ISystem> system : m_LazySystems)
+			{
+				system->Update(this, m_dt);
+			}
+			// TODO: Check if variable is locked
+			//m_AccumulatedTimeLazy -= m_dt;
+		}
+	}
+}
+
+void Engine::UpdateRenderSystems()
+{
+	std::cout << "Initializing thread 2" << std::endl;
+	while (m_IsRunning)
+	{
+		while (m_AccumulatedTime >= m_dt)
+		{
+			//update all systems
+			for (std::shared_ptr<ISystem> system : m_RenderSystems)
+			{
+				system->Update(this, m_dt);
+			}
+			// TODO: Check if variable is locked
+			//m_AccumulatedTimeRender -= m_dt;
 		}
 	}
 }
@@ -149,21 +185,21 @@ void Engine::AddSystem(std::shared_ptr<ISystem> system, eThreadImportance import
 {
 	switch (importance)
 	{
-	case direct:
+	case eThreadImportance::direct:
 		if (std::find(m_DirectSystems.begin(), m_DirectSystems.end(), system) != m_DirectSystems.end())
 		{
 			return;
 		}
 		m_DirectSystems.push_back(system);
 		break;
-	case lazy:
+	case eThreadImportance::lazy:
 		if (std::find(m_LazySystems.begin(), m_LazySystems.end(), system) != m_LazySystems.end())
 		{
 			return;
 		}
 		m_LazySystems.push_back(system);
 		break;
-	case render:
+	case eThreadImportance::render:
 		if (std::find(m_RenderSystems.begin(), m_RenderSystems.end(), system) != m_RenderSystems.end())
 		{
 			return;

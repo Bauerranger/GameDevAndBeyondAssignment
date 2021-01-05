@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <thread>
+
 #include "Window.h"
 #include "InputHelper.h"
 #include "Time.h"
@@ -12,7 +13,7 @@
 #include "ISystem.h"
 #include "RenderSystem.h"
 
-enum eThreadImportance : std::int16_t
+enum class eThreadImportance : std::int16_t
 {
 	direct,
 	lazy,
@@ -30,7 +31,8 @@ public:
 	const bool IsRunning() const { return m_IsRunning; }
 	void Update();
 
-	void UpdateSystems(std::vector<std::shared_ptr<ISystem>>& systems);
+	void UpdateLazySystems();
+	void UpdateRenderSystems();
 
 	//Rendering
 	void Draw();
@@ -57,6 +59,8 @@ public:
 private:
 	//Window handling
 	float m_AccumulatedTime = 0.f;
+	float m_AccumulatedTimeLazy = 0.f;
+	float m_AccumulatedTimeRender = 0.f;
 	bool m_IsRunning;
 	std::shared_ptr<Window> m_Window;
 	//Rendering
@@ -70,8 +74,9 @@ private:
 	std::vector <std::shared_ptr<ISystem>> m_LazySystems;
 	std::vector <std::shared_ptr<ISystem>> m_RenderSystems;
 
+	const float m_dt = 1/60.f;
+
+	// Threading
 	std::thread m_LazyThread;
 	std::thread m_RenderThread;
-
-	const float m_dt = 1/60.f;
 };

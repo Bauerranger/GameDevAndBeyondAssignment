@@ -37,6 +37,8 @@
 #define EngineMain WinMain
 #endif
 
+
+
 int EngineMain()
 {
 
@@ -61,8 +63,7 @@ int EngineMain()
 	std::shared_ptr<MapSystem> mapSystem = std::make_shared<MapSystem>();
 	engine->AddSystem(mapSystem);*/
 	std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>();
-	//engine->AddSystem(audioSystem, eThreadImportance::lazy);
-	engine->AddSystem(audioSystem);
+	engine->AddSystem(audioSystem, eThreadImportance::lazy);
 	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 	std::shared_ptr<AudioComponent> comp = entity->AddComponent("../Assets/Lunar_FieldToTomorrow.ogg", false);
 	audioSystem->AddEntity(entity);
