@@ -30,6 +30,7 @@ public:
 	void GetViewPosition(float& X, float& Y);
 
 	const sf::RenderWindow* GetWindow() { return m_Window; }
+	void SetWindowActive(bool isActive);
 
 private:
 	sf::RenderWindow* m_Window = nullptr;

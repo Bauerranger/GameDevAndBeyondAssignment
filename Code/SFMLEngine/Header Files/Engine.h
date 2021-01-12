@@ -59,8 +59,8 @@ public:
 private:
 	//Window handling
 	float m_AccumulatedTime = 0.f;
-	float m_AccumulatedTimeLazy = 0.f;
-	float m_AccumulatedTimeRender = 0.f;
+	std::atomic<float> m_AccumulatedTimeLazy = 0.f;
+	std::atomic<float> m_AccumulatedTimeRender = 0.f;
 	bool m_IsRunning;
 	std::shared_ptr<Window> m_Window;
 	//Rendering

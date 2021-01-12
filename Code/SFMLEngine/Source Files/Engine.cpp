@@ -8,13 +8,14 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 {
 	m_IsRunning = true;
 	m_Window = std::make_shared<Window>(width, height, text, fullscreen);
+	m_Window->SetWindowActive(false);
 	m_Time = std::make_unique<Time>();
-	m_RenderSystem = std::make_shared<RenderSystem>();
+	m_RenderSystem = std::make_shared<RenderSystem>(); 
+	m_LazyThread = std::thread(&Engine::UpdateLazySystems, this);
+	m_RenderThread = std::thread(&Engine::UpdateRenderSystems, this);
 	// TODO Make threads work
+	// TODO make lazy and render vector of systems and entities atomic
 	AddSystem(m_RenderSystem, eThreadImportance::render);
-	std::thread m_LazyThread(&Engine::UpdateLazySystems, this);
-	std::thread m_RenderThread(&Engine::UpdateRenderSystems, this);
-	// TODO make lazy and render vector of systems and entities mutex
 }
 
 Engine::~Engine()
@@ -24,12 +25,6 @@ Engine::~Engine()
 
 void Engine::Update()
 {
-	if (!m_Window->Update())
-	{
-		//Window has been closed
-		m_IsRunning = false;
-		return;
-	}
 
 	m_Time->Restart();
 
@@ -38,8 +33,8 @@ void Engine::Update()
 
 	m_AccumulatedTime += elapsedTime;
 	// TODO: Lock variable
-	//m_AccumulatedTimeLazy = m_AccumulatedTime;
-	//m_AccumulatedTimeRender = m_AccumulatedTime;
+	m_AccumulatedTimeLazy = m_AccumulatedTime;
+	m_AccumulatedTimeRender = m_AccumulatedTime;
 
 	while (m_AccumulatedTime >= m_dt)
 	{
@@ -56,10 +51,10 @@ void Engine::Update()
 
 void Engine::UpdateLazySystems()
 {
-	std::cout << "Initializing thread 1" << std::endl;
+	std::cout << "Initializing lazy thread" << std::endl;
 	while (m_IsRunning)
 	{
-		while (m_AccumulatedTime >= m_dt)
+		while (m_AccumulatedTimeLazy >= m_dt)
 		{
 			//update all systems
 			for (std::shared_ptr<ISystem> system : m_LazySystems)
@@ -67,17 +62,24 @@ void Engine::UpdateLazySystems()
 				system->Update(this, m_dt);
 			}
 			// TODO: Check if variable is locked
-			//m_AccumulatedTimeLazy -= m_dt;
+			m_AccumulatedTimeLazy = m_AccumulatedTimeLazy - m_dt;
 		}
 	}
 }
 
 void Engine::UpdateRenderSystems()
 {
-	std::cout << "Initializing thread 2" << std::endl;
+	std::cout << "Initializing render thread" << std::endl;
+	m_Window->SetWindowActive(true);
 	while (m_IsRunning)
 	{
-		while (m_AccumulatedTime >= m_dt)
+		if (!m_Window->Update())
+		{
+			//Window has been closed
+			m_IsRunning = false;
+			return;
+		}
+		while (m_AccumulatedTimeRender >= m_dt)
 		{
 			//update all systems
 			for (std::shared_ptr<ISystem> system : m_RenderSystems)
@@ -85,8 +87,9 @@ void Engine::UpdateRenderSystems()
 				system->Update(this, m_dt);
 			}
 			// TODO: Check if variable is locked
-			//m_AccumulatedTimeRender -= m_dt;
+			m_AccumulatedTimeRender = m_AccumulatedTimeRender - m_dt;
 		}
+		Draw();
 	}
 }
 

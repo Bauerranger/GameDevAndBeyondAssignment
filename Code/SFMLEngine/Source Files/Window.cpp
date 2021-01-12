@@ -90,3 +90,9 @@ void Window::GetViewPosition(float& X, float& Y)
 	X = m_GameView->getCenter().x - m_Window->getSize().x / 2;
 	Y = m_GameView->getCenter().y - m_Window->getSize().y / 2;
 }
+
+
+void Window::SetWindowActive(bool isActive)
+{ 
+	m_Window->setActive(isActive);
+}

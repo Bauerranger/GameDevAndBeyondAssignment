@@ -46,7 +46,6 @@ int EngineMain()
 	int height = 900;
 	std::shared_ptr<Engine> engine = std::make_shared<Engine>(width, height, "Fluffy Bunny Overdrive", false);
 
-
 	//Normally this all would be defined in data which is somehow loaded during runtime
 	/*std::shared_ptr<PhysicSystem> physicSystem = std::make_shared<PhysicSystem>();
 	engine->AddSystem(physicSystem);
@@ -62,15 +61,13 @@ int EngineMain()
 
 	std::shared_ptr<MapSystem> mapSystem = std::make_shared<MapSystem>();
 	engine->AddSystem(mapSystem);*/
+
 	std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>();
 	engine->AddSystem(audioSystem, eThreadImportance::lazy);
-	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-	std::shared_ptr<AudioComponent> comp = entity->AddComponent("../Assets/Lunar_FieldToTomorrow.ogg", false);
-	audioSystem->AddEntity(entity);
+
 	while (engine->IsRunning())
 	{
 		engine->Update();
-		engine->Draw();
 	}
 
 	return 0;

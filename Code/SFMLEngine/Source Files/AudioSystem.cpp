@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SFMLEngine/Header Files/Engine.h>
 #include <SFMLEngine/Header Files/EventManager.h>
+#include <filesystem>
 
 AudioSystem::AudioSystem()
 {
@@ -40,9 +41,19 @@ void AudioSystem::Update(Engine* engine, float dt)
 	}
 }
 
+void AudioSystem::Init(Engine* engine) 
+{
+	if (std::filesystem::exists("../Assets/Lunar_FieldToTomorrow.ogg"))
+	{
+		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../Assets/Lunar_FieldToTomorrow.ogg", true);
+		engine->AddEntity(entity);
+	}
+}
+
 inline bool AudioSystem::UpdateSingleEntity(Engine* engine, std::shared_ptr<Entity> entity, float dt)
 {
 	std::shared_ptr<AudioComponent> component;
 	component = entity->GetComponent<AudioComponent>();
-	return component->AudioIsFinished();
+	return !component->AudioIsFinished();
 }

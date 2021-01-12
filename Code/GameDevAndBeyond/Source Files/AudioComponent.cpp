@@ -60,7 +60,7 @@ AudioComponent::AudioComponent(AudioComponent&& other) noexcept
 
 bool AudioComponent::AudioIsFinished()
 {
-	return false;
+	return m_pSound->getStatus() == sf::SoundSource::Status::Stopped ? true : false;
 }
 
 void AudioComponent::PlayAudio()
@@ -76,11 +76,6 @@ void AudioComponent::PauseAudio()
 void AudioComponent::StopAudio()
 {
 	m_pSound->stop();
-}
-
-const float AudioComponent::GetAudioLength() 
-{ 
-	return m_pSoundBuffer->getDuration().asSeconds(); 
 }
 
 void AudioComponent::CalculatePlayedTime(float dt) 

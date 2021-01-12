@@ -29,7 +29,6 @@ public:
 
 
 private:
-	const float GetAudioLength();
 	void CalculatePlayedTime(float dt);
 
 	float m_PlayedTime = 0;
