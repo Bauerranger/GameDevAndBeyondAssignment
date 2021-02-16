@@ -68,11 +68,25 @@ set(ENGINE_SOURCE_FILES
 set(GAME_SOURCE_PATH Code/${GAME_PROJECT_NAME})
 set(GAME_SOURCE_FILES 
 "${GAME_SOURCE_PATH}/Header Files/AudioComponent.h"
+"${GAME_SOURCE_PATH}/Header Files/BlockSystem.h"
+"${GAME_SOURCE_PATH}/Header Files/BrickComponent.h"
 "${GAME_SOURCE_PATH}/Header Files/Events.h"
+"${GAME_SOURCE_PATH}/Header Files/IOComponent.h"
 "${GAME_SOURCE_PATH}/Header Files/MapSystem.h"
+"${GAME_SOURCE_PATH}/Header Files/PhysicComponent.h"
+"${GAME_SOURCE_PATH}/Header Files/PhysicSystem.h"
+"${GAME_SOURCE_PATH}/Header Files/ScoreComponent.h"
+"${GAME_SOURCE_PATH}/Header Files/UISystem.h"
 "${GAME_SOURCE_PATH}/Source Files/AudioComponent.cpp"
+"${GAME_SOURCE_PATH}/Source Files/BlockSystem.cpp"
+"${GAME_SOURCE_PATH}/Source Files/BrickComponent.cpp"
+"${GAME_SOURCE_PATH}/Source Files/IOComponent.cpp"
 "${GAME_SOURCE_PATH}/Source Files/main.cpp"
 "${GAME_SOURCE_PATH}/Source Files/MapSystem.cpp"
+"${GAME_SOURCE_PATH}/Source Files/PhysicComponent.cpp"
+"${GAME_SOURCE_PATH}/Source Files/PhysicSystem.cpp"
+"${GAME_SOURCE_PATH}/Source Files/ScoreComponent.cpp"
+"${GAME_SOURCE_PATH}/Source Files/UISystem.cpp"
 )
 
 add_library(${ENGINE_PROJECT_NAME} ${ENGINE_SOURCE_FILES})

@@ -1,33 +1,38 @@
-#include "../Header Files/MapSystem.h"
-#include "SFMLEngine/Header Files/Engine.h"
-#include "SFMLEngine/Header Files/LevelComponent.h"
-#include "SFMLEngine/Header Files/SpriteComponent.h"
-#include "SFMLEngine/Header Files/TextComponent.h"
-#include "SFMLEngine/Header Files/EventManager.h"
-//#include "PlayerComponent.h"
-//#include "PhysicComponent.h"
-//#include "EnemyComponent.h"
-//#include "IOComponent.h"
-//#include "ItemComponent.h"
-//#include "ScoreEvent.h"
-//#include "ScoreComponent.h"
-//#include "HealthComponent.h"
-//#include "CollisionFlags.h"
+#include "..\Header Files\MapSystem.h"
+#include "..\Header Files\PhysicComponent.h"
+#include "..\Header Files\BrickComponent.h"
+#include "..\Header Files\IOComponent.h"
+#include "..\Header Files\ScoreComponent.h"
+#include <SFMLEngine/Header Files/TextComponent.h>
+#include <SFMLEngine/Header Files/SpriteComponent.h>
+#include <SFMLEngine/Header Files/Engine.h>
+#include <SFMLEngine/Header Files/SpriteComponent.h>
+#include <iostream>
+#include <vector>
 
 MapSystem::MapSystem()
 {
-
+	m_Listener = std::make_shared<EventHandler>();
+	m_PhysicsUpdateEventFunctor = std::bind(&MapSystem::OnPhysicsUpdate, this, std::placeholders::_1);
+	m_Listener->AddCallback(m_PhysicsUpdateEventFunctor);
+	EventManager::GetInstance().AddEventListener(m_Listener);
 }
 
 MapSystem::~MapSystem()
 {
+	EventManager::GetInstance().RemoveEventListener(m_Listener);
+	m_Listener->RemoveCallback(m_PhysicsUpdateEventFunctor);
+}
 
+void MapSystem::Init(Engine* engine)
+{
+	m_Engine = engine;
+	LoadUI(engine);
 }
 
 bool MapSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 {
-	//for reload, we save everything that has a physicsComponent
-	if (entity->HasComponent<SpriteComponent>() || entity->HasComponent<TextComponent>())
+	if (entity->HasComponent<BrickComponent>())
 	{
 		return true;
 	}
@@ -36,110 +41,171 @@ bool MapSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void MapSystem::Update(Engine* engine, float dt)
 {
-	bool keyPress = engine->IsKeyPressed(Key::F1);
-	if (!m_ReloadKeyPress && keyPress)
+	m_DeltaTime = dt;
+}
+
+void MapSystem::UpdateSingleEntityPosition(std::shared_ptr<Entity> entity, float dt)
+{
+	if (entity->HasComponent<PhysicComponent>())
 	{
-		// TODO: Make Reload
-		//Reload(engine, "levels/glt_level.tmx");
-		m_ReloadKeyPress = true;
+		int matrixPosX = 0;
+		int matrixPosY = 0;
+		entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
+		entity->GetComponent<BrickComponent>()->SetBrickMatrixPosition(matrixPosX, matrixPosY + 1);
 	}
-	else if (m_ReloadKeyPress && !keyPress)
-	{
-		m_ReloadKeyPress = false;
+	if (entity->GetComponent<BrickComponent>()) {
+
 	}
 }
 
-void MapSystem::Init(Engine* engine)
+void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, float dt)
 {
-	m_LevelEntity = std::make_shared<Entity>();
-	std::shared_ptr<LevelComponent> levelComp = m_LevelEntity->AddComponent<LevelComponent>();
-	engine->AddEntity(m_LevelEntity);
-
-	// TODO: Load Level
-	//LoadLevel(engine, "levels/level2.tmx");
-}
-
-// TODO: Make custom tile and return it
-const tmx::Tileset::Tile* MapSystem::GetTile(tmx::Map& map, int tileID)
-{
-	for (const tmx::Tileset& tileset : map.getTilesets())
+	int mapSizeX = 10;
+	int mapSizeY = 20;
+	bool collisionHasHappened = false;
+	int matrixPosX = 0;
+	int matrixPosY = 0;
+	if (entity->HasComponent<PhysicComponent>())
 	{
-		if (tileset.hasTile(tileID))
+		entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
+		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
+		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 		{
-			return tileset.getTile(tileID);
-		}
-	}
-	return nullptr;
-}
-
-void MapSystem::Reload(Engine* engine, std::string level)
-{
-	while (m_Entities.size() != 0)
-	{
-		engine->RemoveEntity(m_Entities[0]);
-	}
-	LoadLevel(engine, level);
-}
-
-// TODO: Make load from custom tile
-// tmx::Map has to be replaced with the actual map layout from the json/xml file
-void MapSystem::LoadLevel(Engine* engine, std::string level)
-{
-	// Make map variable
-	tmx::Map map;
-	// Load Map data (serialization)
-	map.load(level);
-	// Set tileset has to be reworked, so it can be used with my way
-	SetTileset(engine, map);
-
-	// Layers are for interactables etc. Can be used to identify items and drawing order
-	const std::vector<tmx::Layer::Ptr>& layers = map.getLayers();
-	// Save size of the map to the computer
-	m_MapWidth = map.getTileCount().x;
-	m_MapHeight = map.getTileCount().y;
-
-	// Adds tiles and objects etc.
-	for (int i = 0; i < layers.size(); ++i)
-	{
-		if (layers[i]->getType() == tmx::Layer::Type::Tile)
-		{
-			const tmx::TileLayer* layer = dynamic_cast<const tmx::TileLayer*>(layers[i].get());
-			AddTiles(layer, map);
-		}
-		else if (layers[i]->getType() == tmx::Layer::Type::Object)
-		{
-			const tmx::ObjectGroup& objects = *dynamic_cast<const tmx::ObjectGroup*>(layers[i].get());
-			for (const tmx::Object& object : objects.getObjects())
+			std::shared_ptr<Entity> otherEntity = *entityItr;
+			int matrixPosXOther = 0;
+			int matrixPosYOther = 0;
+			otherEntity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosXOther, matrixPosYOther);
+			if (!otherEntity->HasComponent<PhysicComponent>() && matrixPosY + 1 == matrixPosYOther && matrixPosX == matrixPosXOther)
 			{
-				const tmx::Tileset::Tile* tile = GetTile(map, object.getTileID());
-				if (tile->type == "Player")
+				collisionHasHappened = true;
+			}
+			++entityItr;
+		}
+		if (matrixPosY >= mapSizeY - 1)
+		{
+			collisionHasHappened = true;
+		}
+	}
+	if (collisionHasHappened)
+	{
+		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
+		for (int i = 0; i < mapSizeY; ++i)
+		{
+			for (int e = 0; e < mapSizeX; ++e)
+			{
+				m_MapMatrix[i][e] = false;
+			}
+		}
+		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+		{
+			std::shared_ptr<Entity> entity = *entityItr;
+			int currentMatrixPositionX = 0;
+			int currentMatrixPositionY = 0;
+			entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(currentMatrixPositionX, currentMatrixPositionY);
+			m_MapMatrix[currentMatrixPositionY][currentMatrixPositionX] = true;
+			++entityItr;
+		}
+		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+		{
+			std::shared_ptr<Entity> entity = *entityItr;
+			if (entity->HasComponent<PhysicComponent>())
+			{
+				entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
+				m_MapMatrix[matrixPosY][matrixPosX] = true;
+			}
+			++entityItr;
+		}
+		bool hasScored = false;
+		int scoreCount = 0;
+		for (int i = 0; i < mapSizeY; ++i)
+		{
+			int rowCount = 0;
+			for (int e = 0; e < mapSizeX; ++e)
+			{
+				if (m_MapMatrix[i][e])
 				{
-					AddPlayer(engine, object, tile);
-				}
-				else if (tile->type == "Enemy")
-				{
-					AddEnemy(engine, object, tile);
-				}
-				else if (tile->type == "Item")
-				{
-					AddItem(engine, object, tile);
+					++rowCount;
 				}
 			}
-
+			if (rowCount >= mapSizeX)
+			{
+				for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+				{
+					std::shared_ptr<Entity> entity = *entityItr;
+					entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
+					if (matrixPosY == i)
+					{
+						m_Engine->RemoveEntity(entity);
+						++scoreCount;
+						hasScored = true;
+					}
+					if (matrixPosY < i)
+					{
+						int currentMatrixPositionX = 0;
+						int currentMatrixPositionY = 0;
+						entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(currentMatrixPositionX, currentMatrixPositionY);
+						entity->GetComponent<BrickComponent>()->SetBrickMatrixPosition(currentMatrixPositionX, currentMatrixPositionY + 1);
+						float currentPositionX = 0;
+						float currentPositionY = 0;
+						entity->GetComponent<SpriteComponent>()->GetPosition(currentPositionX, currentPositionY);
+						entity->GetComponent<SpriteComponent>()->SetPosition(currentPositionX, currentPositionY + 45.f);
+					}
+					++entityItr;
+				}
+			}
+		}
+		if (hasScored)
+		{
+			std::cout << "bub";
+			std::shared_ptr<ScoreEvent> scoreEvent = std::make_shared<ScoreEvent>();
+			scoreEvent->Score = 1 * scoreCount;
+			EventManager::GetInstance().PushEvent(scoreEvent);
 		}
 	}
-	// TODO: Make LoadUI its own system
-	LoadUI(engine);
+	if (!m_CollisionHasHappened)
+	{
+		m_CollisionHasHappened = collisionHasHappened;
+	}
+}
+
+void MapSystem::OnPhysicsUpdate(std::shared_ptr<IEvent> event)
+{
+	std::shared_ptr<PhysicUpdateEvent> physicUpdateEvent = std::dynamic_pointer_cast<PhysicUpdateEvent>(event);
+	if (physicUpdateEvent != nullptr)
+	{
+		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
+		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+		{
+			std::shared_ptr<Entity> entity = *entityItr;
+			UpdateSingleEntityCollision(entity, m_DeltaTime);
+			++entityItr;
+		}
+
+		if (m_CollisionHasHappened)
+		{
+			std::shared_ptr<CollisionEvent> event = std::make_shared<CollisionEvent>();
+			EventManager::GetInstance().PushEvent(event);
+			m_CollisionHasHappened = false;
+		}
+		else
+		{
+			for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+			{
+				std::shared_ptr<Entity> entity = *entityItr;
+				UpdateSingleEntityPosition(entity, m_DeltaTime);
+				++entityItr;
+			}
+		}
+	}
 }
 
 void MapSystem::LoadUI(Engine* engine)
 {
-	// TODO: make UI work and rethink it to be its own system
-	/*std::shared_ptr<Entity> iOEntity = std::make_shared<Entity>();
+	std::shared_ptr<Entity> iOEntity = std::make_shared<Entity>();
 	std::shared_ptr<TextComponent> iOText = iOEntity->AddComponent<TextComponent>();
 	std::shared_ptr<IOComponent> iOComp = iOEntity->AddComponent<IOComponent>();
 
-	iOText->SetFont("Hyperspace.otf");
+	iOText->SetFont("../bin/Hyperspace.otf");
 	iOText->SetColor(255, 255, 255, 255);
 	iOText->SetPosition(10.0f, 10.0f);
 	iOText->SetSize(24);
@@ -150,141 +216,11 @@ void MapSystem::LoadUI(Engine* engine)
 	std::shared_ptr<TextComponent> scoreText = scoreEntity->AddComponent<TextComponent>();
 	std::shared_ptr<ScoreComponent> scoreComp = scoreEntity->AddComponent<ScoreComponent>();
 
-	scoreText->SetFont("Hyperspace.otf");
+	scoreText->SetFont("../bin/Hyperspace.otf");
 	scoreText->SetColor(255, 255, 255, 255);
 	scoreText->SetPosition(10.0f, 10.0f);
 	scoreText->SetSize(24);
 
 	engine->AddEntity(scoreEntity);
-
-	std::shared_ptr<Entity> healthEntity = std::make_shared<Entity>();
-	std::shared_ptr<TextComponent> healthText = healthEntity->AddComponent<TextComponent>();
-	std::shared_ptr<HealthComponent> healthComp = healthEntity->AddComponent<HealthComponent>();
-
-	healthText->SetFont("Hyperspace.otf");
-	healthText->SetColor(255, 255, 255, 255);
-	healthText->SetPosition(10.0f, 35.0f);
-	healthText->SetSize(24);
-
-	engine->AddEntity(healthEntity);*/
 }
 
-void MapSystem::SetTileset(Engine* engine, tmx::Map& map)
-{
-	std::shared_ptr<LevelComponent> levelComp = m_LevelEntity->GetComponent<LevelComponent>();
-	for (const tmx::Tileset& tileset : map.getTilesets())
-	{
-		// Check if data is part of a tile
-		bool isTileMap = false;
-		for (const tmx::Property& property : tileset.getProperties())
-		{
-			if (property.getName() == "IsTileMap")
-			{
-				isTileMap = true;
-				break;
-			}
-		}
-
-		// create tile
-		if (isTileMap)
-		{
-			m_TileWidth = tileset.getTileSize().x;
-			m_TileHeight = tileset.getTileSize().y;
-			levelComp->CreateTileset(tileset.getImagePath(), m_TileWidth, m_TileHeight);
-			break;
-		}
-	}
-}
-
-void MapSystem::AddTiles(const tmx::TileLayer* layer, tmx::Map& map)
-{
-	std::vector<Tile> gameTiles;
-	std::shared_ptr<LevelComponent> levelComp = m_LevelEntity->AddComponent<LevelComponent>();
-	const std::vector<tmx::TileLayer::Tile>& layerTiles = layer->getTiles();
-	for (int j = 0; j < layerTiles.size(); ++j)
-	{
-		const tmx::TileLayer::Tile& layerTile = layerTiles[j];
-		const tmx::Tileset::Tile* tile = GetTile(map, layerTile.ID);
-
-		Tile gameTile;
-		gameTile.X = (j % m_MapWidth) * m_TileWidth;
-		gameTile.Y = std::floor(j / m_MapHeight) * m_TileHeight;
-		gameTile.textureX = tile->imagePosition.x;
-		gameTile.textureY = tile->imagePosition.y;
-		for (const tmx::Property& property : tile->properties)
-		{
-			if (property.getName() == "Collidable")
-			{
-				gameTile.IsCollidable = property.getBoolValue();
-			}
-		}
-		gameTiles.push_back(gameTile);
-	}
-
-	levelComp->SetLevel(gameTiles, m_MapWidth, m_MapHeight);
-}
-
-// TODO: Make player
-//void MapSystem::AddPlayer(Engine* engine, const tmx::Object& object, const tmx::Tileset::Tile* tile)
-//{
-//	std::shared_ptr<Entity> playerEntity = std::make_shared<Entity>();
-//	std::shared_ptr<SpriteComponent> playerSprite = playerEntity->AddComponent<SpriteComponent>();
-//	std::shared_ptr<PhysicComponent> playerPhysics = playerEntity->AddComponent<PhysicComponent>();
-//	std::shared_ptr<PlayerComponent> playerComp = playerEntity->AddComponent<PlayerComponent>();
-//	playerSprite->CreateSprite(tile->imagePath);
-//	playerSprite->SetPosition(object.getPosition().x, object.getPosition().y);
-//
-//	playerPhysics->SetVelocity(0.f, 0.0f);
-//	playerPhysics->SetDamping(0.1f);
-//	playerPhysics->SetTargetFlag(EnemyCollisionFlag | ItemCollisionFlag);
-//
-//	for (const tmx::Property& property : tile->properties)
-//	{
-//		if (property.getName() == "SpeedPerSecond")
-//		{
-//			playerComp->SetSpeedPerSecond(property.getFloatValue());
-//		}
-//		if (property.getName() == "StartHP")
-//		{
-//			playerComp->SetHP(property.getIntValue());
-//		}
-//	}
-//	engine->AddEntity(playerEntity);
-//}
-
-// TODO: Make enemy
-//void MapSystem::AddEnemy(Engine* engine, const tmx::Object& object, const tmx::Tileset::Tile* tile)
-//{
-//	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-//	std::shared_ptr<SpriteComponent> spriteComp = entity->AddComponent<SpriteComponent>();
-//	std::shared_ptr<PhysicComponent> physicComp = entity->AddComponent<PhysicComponent>();
-//	std::shared_ptr<EnemyComponent> enemyComp = entity->AddComponent<EnemyComponent>();
-//	spriteComp->CreateSprite(tile->imagePath);
-//	spriteComp->SetPosition(object.getPosition().x, object.getPosition().y);
-//
-//	physicComp->SetVelocity(0.f, 0.0f);
-//	physicComp->SetDamping(0.1f);
-//	physicComp->SetCollisionFlag(EnemyCollisionFlag);
-//	physicComp->SetTargetFlag(ItemCollisionFlag);
-//	for (const tmx::Property& property : tile->properties)
-//	{
-//		if (property.getName() == "SpeedPerSecond")
-//		{
-//			enemyComp->SetSpeedPerSecond(property.getFloatValue());
-//		}
-//	}
-//	engine->AddEntity(entity);
-//}
-
-// TODO: Make item
-//void MapSystem::AddItem(Engine* engine, const tmx::Object& object, const tmx::Tileset::Tile* tile)
-//{
-//	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-//	std::shared_ptr<SpriteComponent> spriteComp = entity->AddComponent<SpriteComponent>();
-//	std::shared_ptr<PhysicComponent> physicComp = entity->AddComponent<PhysicComponent>();
-//	std::shared_ptr<ItemComponent> itemComp = entity->AddComponent<ItemComponent>();
-//	spriteComp->CreateSprite(tile->imagePath);
-//	spriteComp->SetPosition(object.getPosition().x, object.getPosition().y);
-//	physicComp->SetCollisionFlag(ItemCollisionFlag);
-//	engine->AddEntity(entity);
-//}

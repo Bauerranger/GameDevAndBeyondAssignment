@@ -8,14 +8,14 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 {
 	m_IsRunning = true;
 	m_Window = std::make_shared<Window>(width, height, text, fullscreen);
-	m_Window->SetWindowActive(false);
 	m_Time = std::make_unique<Time>();
 	m_RenderSystem = std::make_shared<RenderSystem>(); 
 	m_LazyThread = std::thread(&Engine::UpdateLazySystems, this);
 	m_RenderThread = std::thread(&Engine::UpdateRenderSystems, this);
 	// TODO Make threads work
 	// TODO make lazy and render vector of systems and entities atomic
-	AddSystem(m_RenderSystem, eThreadImportance::render);
+	AddSystem(m_RenderSystem, eThreadImportance::direct);
+	m_Window->SetWindowActive(false);
 }
 
 Engine::~Engine()
@@ -25,9 +25,7 @@ Engine::~Engine()
 
 void Engine::Update()
 {
-
 	m_Time->Restart();
-
 
 	const float elapsedTime = GetElapsedTimeAsSeconds();
 
@@ -73,6 +71,7 @@ void Engine::UpdateRenderSystems()
 	m_Window->SetWindowActive(true);
 	while (m_IsRunning)
 	{
+		Draw();
 		if (!m_Window->Update())
 		{
 			//Window has been closed

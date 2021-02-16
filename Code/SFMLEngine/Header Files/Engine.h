@@ -53,6 +53,7 @@ public:
 
 	//Window
 	const std::shared_ptr<Window> GetWindow() const;
+	// TODO: Check if still needed
 	void SetViewCenter(float X, float Y);
 	void GetViewCenter(float& X, float& Y);
 

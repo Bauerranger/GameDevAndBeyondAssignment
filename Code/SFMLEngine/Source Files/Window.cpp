@@ -96,3 +96,9 @@ void Window::SetWindowActive(bool isActive)
 { 
 	m_Window->setActive(isActive);
 }
+
+void Window::GetWindowSize(int& X, int& Y)
+{
+	X = m_GameView->getSize().x;
+	Y = m_GameView->getSize().y;
+}

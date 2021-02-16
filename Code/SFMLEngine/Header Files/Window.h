@@ -29,12 +29,12 @@ public:
 	void SetViewCenter(float X, float Y);
 	void GetViewPosition(float& X, float& Y);
 
-	const sf::RenderWindow* GetWindow() { return m_Window; }
+	sf::RenderWindow* GetWindow() { return m_Window; }
 	void SetWindowActive(bool isActive);
+	void GetWindowSize(int& X, int& Y);
 
 private:
 	sf::RenderWindow* m_Window = nullptr;
 	sf::View* m_GameView = nullptr;
 	sf::View* m_UIView = nullptr;
-
 };

@@ -43,10 +43,10 @@ void AudioSystem::Update(Engine* engine, float dt)
 
 void AudioSystem::Init(Engine* engine) 
 {
-	if (std::filesystem::exists("../Assets/Lunar_FieldToTomorrow.ogg"))
+	if (std::filesystem::exists("../bin/Tetris_theme.ogg"))
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../Assets/Lunar_FieldToTomorrow.ogg", true);
+		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Tetris_theme.ogg", true);
 		engine->AddEntity(entity);
 	}
 }
