@@ -19,7 +19,7 @@ enum class eThreadImportance : std::int16_t
 	lazy,
 	render
 };
-
+// TODO: Find what happens with score or spawn event (program stops)
 class Engine
 {
 public:
@@ -27,6 +27,7 @@ public:
 	~Engine();
 
 public:
+
 	//Window handling
 	const bool IsRunning() const { return m_IsRunning; }
 	void Update();
@@ -57,11 +58,11 @@ public:
 	void SetViewCenter(float X, float Y);
 	void GetViewCenter(float& X, float& Y);
 
+	//Helper
+	std::vector <std::shared_ptr<Entity>> GetAllEntities() { return m_Entities; }
 private:
 	//Window handling
 	float m_AccumulatedTime = 0.f;
-	std::atomic<float> m_AccumulatedTimeLazy = 0.f;
-	std::atomic<float> m_AccumulatedTimeRender = 0.f;
 	bool m_IsRunning;
 	std::shared_ptr<Window> m_Window;
 	//Rendering

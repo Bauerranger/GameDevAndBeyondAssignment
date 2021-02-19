@@ -9,9 +9,9 @@ public:
 	~BrickComponent();
 public:
 	void GetBrickMatrixPosition(int& matrixPosX, int& matrixPosY);
-	void SetBrickMatrixPosition(int matrixPosX, int matrixPosY);
+	void SetBrickMatrixPosition(const int matrixPosX, const int matrixPosY);
 	void GetShapeKey(int& shapeKey);
-	void SetShapeKey(int shapeKey);
+	void SetShapeKey(const int shapeKey);
 private:
 	float m_MatrixPosX = 0;
 	float m_MatrixPosY = 0;

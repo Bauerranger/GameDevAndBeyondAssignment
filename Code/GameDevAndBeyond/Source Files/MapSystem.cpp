@@ -1,4 +1,5 @@
 #include "..\Header Files\MapSystem.h"
+#include "..\Header Files\BlockSystem.h"
 #include "..\Header Files\PhysicComponent.h"
 #include "..\Header Files\BrickComponent.h"
 #include "..\Header Files\IOComponent.h"
@@ -20,8 +21,8 @@ MapSystem::MapSystem()
 
 MapSystem::~MapSystem()
 {
-	EventManager::GetInstance().RemoveEventListener(m_Listener);
 	m_Listener->RemoveCallback(m_PhysicsUpdateEventFunctor);
+	EventManager::GetInstance().RemoveEventListener(m_Listener);
 }
 
 void MapSystem::Init(Engine* engine)
@@ -53,15 +54,12 @@ void MapSystem::UpdateSingleEntityPosition(std::shared_ptr<Entity> entity, float
 		entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
 		entity->GetComponent<BrickComponent>()->SetBrickMatrixPosition(matrixPosX, matrixPosY + 1);
 	}
-	if (entity->GetComponent<BrickComponent>()) {
-
-	}
 }
 
 void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, float dt)
 {
-	int mapSizeX = 10;
-	int mapSizeY = 20;
+	int mapSizeY = sizeof(m_MapMatrix) / sizeof(m_MapMatrix[0]);
+	int mapSizeX = sizeof(m_MapMatrix[0]);
 	bool collisionHasHappened = false;
 	int matrixPosX = 0;
 	int matrixPosY = 0;
@@ -86,25 +84,11 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 			collisionHasHappened = true;
 		}
 	}
+	
 	if (collisionHasHappened)
 	{
 		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
-		for (int i = 0; i < mapSizeY; ++i)
-		{
-			for (int e = 0; e < mapSizeX; ++e)
-			{
-				m_MapMatrix[i][e] = false;
-			}
-		}
-		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
-		{
-			std::shared_ptr<Entity> entity = *entityItr;
-			int currentMatrixPositionX = 0;
-			int currentMatrixPositionY = 0;
-			entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(currentMatrixPositionX, currentMatrixPositionY);
-			m_MapMatrix[currentMatrixPositionY][currentMatrixPositionX] = true;
-			++entityItr;
-		}
+
 		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 		{
 			std::shared_ptr<Entity> entity = *entityItr;
@@ -115,30 +99,37 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 			}
 			++entityItr;
 		}
-		bool hasScored = false;
-		int scoreCount = 0;
-		for (int i = 0; i < mapSizeY; ++i)
+
+		for (int i = 0; i < mapSizeY; i++)
 		{
-			int rowCount = 0;
-			for (int e = 0; e < mapSizeX; ++e)
+			int counter = 0;
+			for (int e = 0; e < mapSizeX; e++)
 			{
 				if (m_MapMatrix[i][e])
 				{
-					++rowCount;
+					++counter;
 				}
 			}
-			if (rowCount >= mapSizeX)
+
+			if (counter == mapSizeX)
 			{
 				for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 				{
 					std::shared_ptr<Entity> entity = *entityItr;
+					// Remove individual bricks
 					entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
 					if (matrixPosY == i)
 					{
+						m_MapMatrix[matrixPosY][matrixPosX] = false;
 						m_Engine->RemoveEntity(entity);
-						++scoreCount;
-						hasScored = true;
 					}
+					++entityItr;
+				}
+				for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+				{
+					std::shared_ptr<Entity> entity = *entityItr;
+					// Move bricks above the deleted line down
+					entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
 					if (matrixPosY < i)
 					{
 						int currentMatrixPositionX = 0;
@@ -152,19 +143,50 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 					}
 					++entityItr;
 				}
+				// Score
+				// TODO make nice score
 			}
 		}
-		if (hasScored)
+		UpdateMap();
+		for (int i = 0; i < 20; i++)
 		{
-			std::cout << "bub";
-			std::shared_ptr<ScoreEvent> scoreEvent = std::make_shared<ScoreEvent>();
-			scoreEvent->Score = 1 * scoreCount;
-			EventManager::GetInstance().PushEvent(scoreEvent);
+			for (int j = 0; j < 10; j++)
+			{
+				std::cout << m_MapMatrix[i][j];
+				if (j == 9) {
+					std::cout << std::endl;
+				}
+			}
 		}
+		std::cout << std::endl;
 	}
 	if (!m_CollisionHasHappened)
 	{
 		m_CollisionHasHappened = collisionHasHappened;
+	}
+}
+
+void MapSystem::UpdateMap()
+{
+	for (int i = 0; i < sizeof(m_MapMatrix) / sizeof(m_MapMatrix[0]); i++)
+	{
+		for (int j = 0; j < sizeof(m_MapMatrix[0]); j++)
+		{
+			m_MapMatrix[i][j] = false;
+		}
+	}
+	std::vector<std::shared_ptr<Entity>> copiedEntities = BlockSystem::Instance()->GetBrickEntities();;
+	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+	{
+		std::shared_ptr<Entity> entity = *entityItr;
+		if(entity->GetComponent<BrickComponent>())
+		{
+			int currentMatrixPositionX = 0;
+			int currentMatrixPositionY = 0;
+			entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(currentMatrixPositionX, currentMatrixPositionY);
+			m_MapMatrix[currentMatrixPositionY][currentMatrixPositionX] = true;
+			++entityItr;
+		}
 	}
 }
 
@@ -183,8 +205,8 @@ void MapSystem::OnPhysicsUpdate(std::shared_ptr<IEvent> event)
 
 		if (m_CollisionHasHappened)
 		{
-			std::shared_ptr<CollisionEvent> event = std::make_shared<CollisionEvent>();
-			EventManager::GetInstance().PushEvent(event);
+			std::shared_ptr<CollisionEvent> collisionEvent = std::make_shared<CollisionEvent>();
+			EventManager::GetInstance().PushEvent(collisionEvent);
 			m_CollisionHasHappened = false;
 		}
 		else

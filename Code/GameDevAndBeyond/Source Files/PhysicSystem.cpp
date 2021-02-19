@@ -47,8 +47,8 @@ void PhysicSystem::Update(Engine * engine, float dt)
 			}
 			++entityItr;
 		}
-		std::shared_ptr<PhysicUpdateEvent> event = std::make_shared<PhysicUpdateEvent>();
-		EventManager::GetInstance().PushEvent(event);
+		std::shared_ptr<PhysicUpdateEvent> physicEvent = std::make_shared<PhysicUpdateEvent>();
+		EventManager::GetInstance().PushEvent(physicEvent);
 		m_TickTime = 0;
 	}
 }
@@ -80,6 +80,8 @@ void PhysicSystem::OnCollision(std::shared_ptr<IEvent> event)
 			float waitTime = 0.5f;
 			m_TickWaitTime = waitTime;
 		}
+		std::shared_ptr<SpawnEvent> spawnEvent = std::make_shared<SpawnEvent>();
+		EventManager::GetInstance().PushEvent(spawnEvent);
 	}
 }
 

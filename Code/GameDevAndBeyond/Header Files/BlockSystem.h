@@ -10,13 +10,15 @@ class BlockSystem : public ISystem
 public:
 	BlockSystem();
 	~BlockSystem();
+
+	static BlockSystem* Instance();
 public:
 
 	//ISystem
 	virtual void Init(Engine* engine);
 	virtual bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
 	virtual void Update(Engine* engine, float dt) override;
-
+	std::vector<std::shared_ptr<Entity>> GetBrickEntities() { return m_Entities; };
 private:
 
 	//different block types
@@ -52,4 +54,6 @@ private:
 	void ResetPosition();
 	void OnCollision(std::shared_ptr<IEvent> event);
 	void OnLoose(std::shared_ptr<IEvent> event);
+
+	static BlockSystem* s_pInstance;
 };

@@ -13,6 +13,7 @@ public:
 	virtual void Init(Engine* engine);
 	virtual bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
 	virtual void Update(Engine* engine, float dt) override;
+	void UpdateMap();
 
 private:
 	void LoadUI(Engine* engine);
@@ -22,8 +23,9 @@ private:
 	std::shared_ptr<EventHandler> m_Listener;
 	EventFunctor m_PhysicsUpdateEventFunctor;
 	float m_DeltaTime;
-	bool m_MapMatrix[20][10] = { 0 };
-	bool m_CollisionHasHappened = false;
+	// TODO: Draw from Matrix, only work with matrix in physics system
+	std::atomic_bool m_MapMatrix[20][10] = { 0 };
+	std::atomic_bool m_CollisionHasHappened = false;
 	Engine* m_Engine;
 	std::vector<std::shared_ptr<Entity>> m_MarkedForDelete;
 };

@@ -5,6 +5,12 @@ class CollisionEvent : public IEvent
 {
 };
 
+class SpawnEvent : public IEvent
+{
+};
+
+// TODO: make sound event
+
 class PhysicUpdateEvent : public IEvent
 {
 };
@@ -25,6 +31,7 @@ public:
 	bool DoesEventMatch(std::shared_ptr<IEvent> event)
 	{
 		if (std::dynamic_pointer_cast<ScoreEvent>(event) != nullptr
+			|| std::dynamic_pointer_cast<SpawnEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<CollisionEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<PhysicUpdateEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<LooseEvent>(event) != nullptr)

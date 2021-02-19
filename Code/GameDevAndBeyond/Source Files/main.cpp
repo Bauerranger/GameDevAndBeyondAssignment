@@ -18,7 +18,7 @@ int EngineMain()
 
 	int width = 1920;
 	int height = 1080;
-	std::shared_ptr<Engine> engine = std::make_shared<Engine>(width, height, "SFML-Tetris", true);
+	std::shared_ptr<Engine> engine = std::make_shared<Engine>(width, height, "SFML-Tetris", false);
 
 	std::shared_ptr<PhysicSystem> physicSystem = std::make_shared<PhysicSystem>();
 	engine->AddSystem(physicSystem, eThreadImportance::direct);
@@ -27,7 +27,7 @@ int EngineMain()
 	engine->AddSystem(blockSystem, eThreadImportance::direct);
 
 	std::shared_ptr<MapSystem> mapSystem = std::make_shared<MapSystem>();
-	engine->AddSystem(mapSystem, eThreadImportance::lazy);
+	engine->AddSystem(mapSystem, eThreadImportance::direct);
 
 	std::shared_ptr<UISystem> uiSystem = std::make_shared<UISystem>();
 	engine->AddSystem(uiSystem, eThreadImportance::lazy);

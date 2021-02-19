@@ -6,8 +6,17 @@
 #include <iostream>
 #include <ctime>
 
+BlockSystem* BlockSystem::s_pInstance = nullptr;
+
+BlockSystem* BlockSystem::Instance()
+{
+	return s_pInstance;
+}
+
 BlockSystem::BlockSystem()
 {
+	//setting up singleton
+	s_pInstance = this;
 	//setting up events
 	m_CollisionListener = std::make_shared<EventHandler>();
 	m_LooseListener = std::make_shared<EventHandler>();
@@ -43,6 +52,10 @@ BlockSystem::BlockSystem()
 
 BlockSystem::~BlockSystem()
 {
+	if (s_pInstance == this)
+	{
+		s_pInstance = nullptr;
+	}
 	//End events
 	EventManager::GetInstance().RemoveEventListener(m_CollisionListener);
 	EventManager::GetInstance().RemoveEventListener(m_LooseListener);
@@ -53,6 +66,7 @@ BlockSystem::~BlockSystem()
 void BlockSystem::Init(Engine * engine)
 {
 	m_Engine = engine;
+	// TODO: Make block spawn after init (Maybe a start function)
 	SpawnBlock();
 }
 
@@ -91,7 +105,7 @@ inline bool BlockSystem::UpdateEntities(Engine * engine, float dt)
 	{
 		Rotation(engine);
 	}
-	float coolDownTime = 0.15f;
+	const float coolDownTime = 0.15f;
 
 	if (!m_ReadyForLeftKeyPress || !m_ReadyForDropKeyPress || !m_ReadyForRightKeyPress || !m_ReadyForRotateKeyPress)
 	{
@@ -368,7 +382,6 @@ inline void BlockSystem::GetUnmovedEntities(std::vector<std::shared_ptr<Entity>>
 
 inline void BlockSystem::MoveBrickEntities(bool  rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, int mostLeftMatrixPosition, int mostTopMatrixPosition)
 {
-
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int e = 0; e < 4; ++e)
@@ -384,7 +397,7 @@ inline void BlockSystem::MoveBrickEntities(bool  rotationArray[4][4], std::vecto
 	}
 }
 
-inline void BlockSystem::CheckIfRotationPossible(bool  rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, std::vector<std::shared_ptr<Entity>> &unmovedEntities, bool &retflag)
+inline void BlockSystem::CheckIfRotationPossible(bool rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, std::vector<std::shared_ptr<Entity>> &unmovedEntities, bool &retflag)
 {
 	retflag = true;
 	for (int i = 0; i < 4; ++i)
@@ -426,7 +439,6 @@ inline void BlockSystem::CheckIfRotationPossible(bool  rotationArray[4][4], std:
 
 inline void BlockSystem::SetSpritePosOnWindow(std::vector<std::shared_ptr<Entity>> &movedEntities, int movedEntitiesCounter, int brickMatrixPosX, int brickMatrixPosY)
 {
-
 	std::shared_ptr<SpriteComponent> spriteComponent = movedEntities[movedEntitiesCounter]->GetComponent<SpriteComponent>();
 	float spritePosX = brickMatrixPosX * 45;
 	float spritePosY = brickMatrixPosY * 45;
@@ -457,8 +469,8 @@ void BlockSystem::SpawnBlock()
 					entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
 					if (matrixPosX == e + 4 && matrixPosY == i) 
 					{
-						std::shared_ptr<LooseEvent> event = std::make_shared<LooseEvent>();
-						EventManager::GetInstance().PushEvent(event);
+						std::shared_ptr<LooseEvent> looseEvent = std::make_shared<LooseEvent>();
+						EventManager::GetInstance().PushEvent(looseEvent);
 						return;
 					}
 					++entityItr;
@@ -478,8 +490,7 @@ void BlockSystem::SpawnBlock()
 		}
 	}
 }
-// Sometimes blocks stay in position when the line gets deleted 
-// TODO: find real problem
+// TODO: Sometimes blocks stay in position when the line gets deleted  find real problem
 void BlockSystem::ResetPosition()
 {
 	int windowSizeX = 0;
@@ -500,7 +511,7 @@ void BlockSystem::ResetPosition()
 void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 {
 	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
-	std::shared_ptr<CollisionEvent> collisionEvent = std::dynamic_pointer_cast<CollisionEvent>(event);
+	std::shared_ptr<SpawnEvent> spawnEvent = std::dynamic_pointer_cast<SpawnEvent>(event);
 	std::shared_ptr<ScoreEvent> scoreEvent = std::dynamic_pointer_cast<ScoreEvent>(event);
 	if (looseEvent != nullptr)
 	{
@@ -511,8 +522,9 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 	{
 		std::cout << "Score ";
 	}
-	if (collisionEvent != nullptr)
+	if (spawnEvent != nullptr)
 	{
+		// TODO: Make spawn event triger only once
 		std::cout << "Spawn ";
 		SpawnBlock();
 	}

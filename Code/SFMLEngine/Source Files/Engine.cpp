@@ -12,8 +12,7 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 	m_RenderSystem = std::make_shared<RenderSystem>(); 
 	m_LazyThread = std::thread(&Engine::UpdateLazySystems, this);
 	m_RenderThread = std::thread(&Engine::UpdateRenderSystems, this);
-	// TODO Make threads work
-	// TODO make lazy and render vector of systems and entities atomic
+	// TODO find problem when closing the program
 	AddSystem(m_RenderSystem, eThreadImportance::direct);
 	m_Window->SetWindowActive(false);
 }
@@ -30,12 +29,15 @@ void Engine::Update()
 	const float elapsedTime = GetElapsedTimeAsSeconds();
 
 	m_AccumulatedTime += elapsedTime;
-	// TODO: Lock variable
-	m_AccumulatedTimeLazy = m_AccumulatedTime;
-	m_AccumulatedTimeRender = m_AccumulatedTime;
 
 	while (m_AccumulatedTime >= m_dt)
 	{
+		if (!m_Window->Update())
+		{
+			//Window has been closed
+			m_IsRunning = false;
+			return;
+		}
 		for (std::shared_ptr<ISystem> system : m_DirectSystems)
 		{
 			system->Update(this, m_dt);
@@ -52,15 +54,13 @@ void Engine::UpdateLazySystems()
 	std::cout << "Initializing lazy thread" << std::endl;
 	while (m_IsRunning)
 	{
-		while (m_AccumulatedTimeLazy >= m_dt)
+		while (m_AccumulatedTime >= m_dt)
 		{
 			//update all systems
 			for (std::shared_ptr<ISystem> system : m_LazySystems)
 			{
 				system->Update(this, m_dt);
 			}
-			// TODO: Check if variable is locked
-			m_AccumulatedTimeLazy = m_AccumulatedTimeLazy - m_dt;
 		}
 	}
 }
@@ -71,26 +71,19 @@ void Engine::UpdateRenderSystems()
 	m_Window->SetWindowActive(true);
 	while (m_IsRunning)
 	{
-		Draw();
-		if (!m_Window->Update())
-		{
-			//Window has been closed
-			m_IsRunning = false;
-			return;
-		}
-		while (m_AccumulatedTimeRender >= m_dt)
+		while (m_AccumulatedTime >= m_dt)
 		{
 			//update all systems
 			for (std::shared_ptr<ISystem> system : m_RenderSystems)
 			{
 				system->Update(this, m_dt);
 			}
-			// TODO: Check if variable is locked
-			m_AccumulatedTimeRender = m_AccumulatedTimeRender - m_dt;
 		}
 		Draw();
 	}
 }
+
+
 
 void Engine::Draw()
 {
@@ -132,7 +125,6 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		if (system->DoesEntityMatch(entity))
 		{
 			system->AddEntity(entity);
-			return;
 		}
 	}
 
@@ -141,7 +133,6 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		if (system->DoesEntityMatch(entity))
 		{
 			system->AddEntity(entity);
-			return;
 		}
 	}
 
@@ -150,7 +141,6 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		if (system->DoesEntityMatch(entity))
 		{
 			system->AddEntity(entity);
-			return;
 		}
 	}
 }
@@ -167,19 +157,16 @@ void Engine::RemoveEntity(std::shared_ptr<Entity> entity)
 	for (std::shared_ptr<ISystem> system : m_DirectSystems)
 	{
 		system->RemoveEntity(entity);
-		return;
 	}
 
 	for (std::shared_ptr<ISystem> system : m_LazySystems)
 	{
 		system->RemoveEntity(entity);
-		return;
 	}
 
 	for (std::shared_ptr<ISystem> system : m_RenderSystems)
 	{
 		system->RemoveEntity(entity);
-		return;
 	}
 }
 
