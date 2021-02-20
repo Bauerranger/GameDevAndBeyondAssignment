@@ -380,11 +380,7 @@ inline void BlockSystem::GetUnmovedEntities(std::vector<std::shared_ptr<Entity>>
 	}
 }
 
-inline void BlockSystem::MoveBrickEntities(	bool rotationArray[4][4], 
-											std::vector<std::shared_ptr<Entity>> &movedEntities, 
-											int &movedEntitiesCounter, 
-											int mostLeftMatrixPosition,
-											int mostTopMatrixPosition)
+inline void BlockSystem::MoveBrickEntities(bool  rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, int mostLeftMatrixPosition, int mostTopMatrixPosition)
 {
 	for (int i = 0; i < 4; ++i)
 	{
@@ -441,10 +437,7 @@ inline void BlockSystem::CheckIfRotationPossible(bool rotationArray[4][4], std::
 	retflag = false;
 }
 
-inline void BlockSystem::SetSpritePosOnWindow(	std::vector<std::shared_ptr<Entity>> &movedEntities,
-												int movedEntitiesCounter,
-												int brickMatrixPosX,
-												int brickMatrixPosY)
+inline void BlockSystem::SetSpritePosOnWindow(std::vector<std::shared_ptr<Entity>> &movedEntities, int movedEntitiesCounter, int brickMatrixPosX, int brickMatrixPosY)
 {
 	std::shared_ptr<SpriteComponent> spriteComponent = movedEntities[movedEntitiesCounter]->GetComponent<SpriteComponent>();
 	float spritePosX = brickMatrixPosX * 45;
@@ -459,7 +452,7 @@ void BlockSystem::SpawnBlock()
 {
 	ResetPosition();
 	m_CurrentRotation = 0;
-	srand(time(nullptr));
+	srand(time(NULL));
 	m_ShapeKey = (rand() % 7);
 	for (int i = 0; i < 2; ++i)
 	{
@@ -488,7 +481,6 @@ void BlockSystem::SpawnBlock()
 				std::shared_ptr<SpriteComponent> brickSprite = brickEntity->AddComponent<SpriteComponent>();
 				std::shared_ptr<PhysicComponent> physicComponent = brickEntity->AddComponent<PhysicComponent>();
 				brickSprite->CreateSprite("../bin/Brick.png");
-				brickSprite->SetColor(m_ShapeKey);
 				int windowSizeX = 0;
 				int windowSizeY = 0;
 				m_Engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
@@ -532,6 +524,7 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 	}
 	if (spawnEvent != nullptr)
 	{
+		// TODO: Make spawn event triger only once
 		std::cout << "Spawn ";
 		SpawnBlock();
 	}

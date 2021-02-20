@@ -34,8 +34,6 @@ public:
 	void SetVisible(bool visible);
 	//Get whether the sprite can be seen or not
 	void GetVisible(bool& visible);
-	//Sets the color of the sprite
-	void SetColor(const int blockKey);
 
 	//check if the Sprite is Colliding with another Sprite
 	const bool IsCollidingWith(std::shared_ptr<SpriteComponent> otherSprite) const;

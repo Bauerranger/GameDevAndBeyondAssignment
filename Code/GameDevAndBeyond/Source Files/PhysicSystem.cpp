@@ -2,7 +2,7 @@
 #include "../Header Files/PhysicComponent.h"
 #include <SFMLEngine/Header Files/SpriteComponent.h>
 #include <SFMLEngine/Header Files/Engine.h>
-#include <cmath>
+#include <math.h>
 #include <iostream>
 
 PhysicSystem::PhysicSystem()
@@ -67,8 +67,8 @@ inline void PhysicSystem::UpdateSingleEntityPosition(std::shared_ptr<Entity> ent
 
 void PhysicSystem::OnCollision(std::shared_ptr<IEvent> event)
 {
-	std::shared_ptr<CollisionEvent> collisionEvent = std::dynamic_pointer_cast<CollisionEvent>(event);
-	if (collisionEvent != nullptr)
+	std::shared_ptr<CollisionEvent> ColissionEvent = std::dynamic_pointer_cast<CollisionEvent>(event);
+	if (ColissionEvent != nullptr)
 	{
 		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)

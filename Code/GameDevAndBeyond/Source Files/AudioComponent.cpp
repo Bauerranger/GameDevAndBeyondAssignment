@@ -13,7 +13,8 @@ AudioComponent::AudioComponent(const std::string fileName, const bool isLooping)
 }
 
 AudioComponent::~AudioComponent()
-= default;
+{	
+}
 
 AudioComponent& AudioComponent::operator=(const AudioComponent& other)
 {

@@ -16,7 +16,7 @@
 enum class eThreadImportance : std::int16_t
 {
 	direct,
-	worker,
+	lazy,
 	render
 };
 // TODO: Find what happens with score or spawn event (program stops)
@@ -32,7 +32,7 @@ public:
 	const bool IsRunning() const { return m_IsRunning; }
 	void Update();
 
-	void UpdateWorkerSystems();
+	void UpdateLazySystems();
 	void UpdateRenderSystems();
 
 	//Rendering
@@ -58,9 +58,8 @@ public:
 	void SetViewCenter(float X, float Y);
 	void GetViewCenter(float& X, float& Y);
 
-	//Threading
-	void JoinThreads() { m_RenderThread.join(); m_WorkerThread.join(); }
-
+	//Helper
+	std::vector <std::shared_ptr<Entity>> GetAllEntities() { return m_Entities; }
 private:
 	//Window handling
 	float m_AccumulatedTime = 0.f;
@@ -74,12 +73,12 @@ private:
 	std::vector <std::shared_ptr<Entity>> m_Entities;
 	//Systems
 	std::vector <std::shared_ptr<ISystem>> m_DirectSystems;
-	std::vector <std::shared_ptr<ISystem>> m_WorkerSystems;
+	std::vector <std::shared_ptr<ISystem>> m_LazySystems;
 	std::vector <std::shared_ptr<ISystem>> m_RenderSystems;
 
 	const float m_dt = 1/60.f;
 
 	// Threading
-	std::thread m_WorkerThread;
+	std::thread m_LazyThread;
 	std::thread m_RenderThread;
 };
