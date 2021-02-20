@@ -9,7 +9,8 @@ AudioSystem::AudioSystem()
 
 AudioSystem::~AudioSystem() 
 {
-	delete(m_Engine);
+	// TODO find out why this line stops the window to close
+	//delete(m_Engine);
 	m_Listener->RemoveCallback(m_EventFunctor);
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
 }

@@ -30,7 +30,7 @@ public:
 class EventHandler : public IEventHandler
 {
 public:
-	bool DoesEventMatch(std::shared_ptr<IEvent> event) override
+	bool DoesEventMatch(std::shared_ptr<IEvent> event)
 	{
 		if (std::dynamic_pointer_cast<ScoreEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<SpawnEvent>(event) != nullptr

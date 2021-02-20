@@ -12,8 +12,6 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 	m_RenderSystem = std::make_shared<RenderSystem>();
 	m_WorkerThread = std::thread(&Engine::UpdateWorkerSystems, this);
 	m_RenderThread = std::thread(&Engine::UpdateRenderSystems, this);
-	m_WorkerThread.detach();
-	m_RenderThread.detach();
 	AddSystem(m_RenderSystem, eThreadImportance::direct);
 	m_Window->SetWindowActive(false);
 }
@@ -22,7 +20,7 @@ Engine::~Engine()
 {
 	if (m_IsRunning) 
 	{
-		//JoinThreads();
+		JoinThreads();
 	}
 	m_IsRunning = false;
 }
@@ -61,10 +59,6 @@ void Engine::UpdateWorkerSystems()
 	{
 		while (m_AccumulatedTime >= m_dt)
 		{
-			if (!m_IsRunning) 
-			{
-				return;
-			}
 			//update all systems
 			for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
 			{
@@ -82,10 +76,6 @@ void Engine::UpdateRenderSystems()
 	{
 		while (m_AccumulatedTime >= m_dt)
 		{
-			if (!m_IsRunning)
-			{
-				return;
-			}
 			//update all systems
 			for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
 			{
