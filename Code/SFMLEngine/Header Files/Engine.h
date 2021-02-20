@@ -19,7 +19,7 @@ enum class eThreadImportance : std::int16_t
 	worker,
 	render
 };
-// TODO: Find what happens with score or spawn event (program stops)
+
 class Engine
 {
 public:
