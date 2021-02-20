@@ -2,12 +2,10 @@
 #include <iostream>
 
 BrickComponent::BrickComponent()
-{
-}
+= default;
 
 BrickComponent::~BrickComponent()
-{
-}
+= default;
 
 void BrickComponent::GetBrickMatrixPosition(int& matrixPosX, int& matrixPosY)
 {

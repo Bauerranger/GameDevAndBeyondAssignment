@@ -1,7 +1,7 @@
 #pragma once
 #include <SFMLEngine/Header Files/EventManager.h>	
 
-class CollisionEvent : public IEvent
+class EGameStart : public IEvent
 {
 };
 
@@ -9,9 +9,11 @@ class SpawnEvent : public IEvent
 {
 };
 
-// TODO: make sound event
-
 class PhysicUpdateEvent : public IEvent
+{
+};
+
+class CollisionEvent : public IEvent
 {
 };
 

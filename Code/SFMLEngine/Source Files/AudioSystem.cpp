@@ -5,11 +5,14 @@
 #include <filesystem>
 
 AudioSystem::AudioSystem()
-{
-}
+= default;
 
-AudioSystem::~AudioSystem()
+AudioSystem::~AudioSystem() 
 {
+	// TODO find out why this line stops the window to close
+	//delete(m_Engine);
+	m_Listener->RemoveCallback(m_EventFunctor);
+	EventManager::GetInstance().RemoveEventListener(m_Listener);
 }
 
 void AudioSystem::AddEntity(std::shared_ptr<Entity> entity)
@@ -43,12 +46,13 @@ void AudioSystem::Update(Engine* engine, float dt)
 
 void AudioSystem::Init(Engine* engine) 
 {
-	if (std::filesystem::exists("../bin/Tetris_theme.ogg"))
-	{
-		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
-		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Tetris_theme.ogg", true);
-		engine->AddEntity(entity);
-	}
+	m_Engine = engine;
+	m_Listener = std::make_shared<EventHandler>();
+	m_EventFunctor = std::bind(&AudioSystem::OnEvent, this, std::placeholders::_1);
+	m_Listener->AddCallback(m_EventFunctor);
+	EventManager::GetInstance().AddEventListener(m_Listener);
+	// TODO: Make music start at game start
+	PlayMusic();
 }
 
 inline bool AudioSystem::UpdateSingleEntity(Engine* engine, std::shared_ptr<Entity> entity, float dt)
@@ -56,4 +60,66 @@ inline bool AudioSystem::UpdateSingleEntity(Engine* engine, std::shared_ptr<Enti
 	std::shared_ptr<AudioComponent> component;
 	component = entity->GetComponent<AudioComponent>();
 	return !component->AudioIsFinished();
+}
+
+void AudioSystem::PlayMusic()
+{
+	if (std::filesystem::exists("../bin/Tetris_theme.ogg"))
+	{
+		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Tetris_theme.ogg", true);
+		m_Engine->AddEntity(entity);
+	}
+}
+
+void AudioSystem::PlayScore()
+{
+	if (std::filesystem::exists("../bin/Score.ogg"))
+	{
+		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Score.ogg", false);
+		m_Engine->AddEntity(entity);
+	}
+}
+
+void AudioSystem::PlayCollision()
+{
+	if (std::filesystem::exists("../bin/Collision.ogg"))
+	{
+		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Collision.ogg", false);
+		m_Engine->AddEntity(entity);
+	}
+}
+
+void AudioSystem::PlayEnd()
+{
+	if (std::filesystem::exists("../bin/End.ogg"))
+	{
+		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
+		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/End.ogg", false);
+		m_Engine->AddEntity(entity);
+	}
+}
+
+void AudioSystem::OnEvent(std::shared_ptr<IEvent> event)
+{
+	std::shared_ptr<CollisionEvent> collisionEvent = std::dynamic_pointer_cast<CollisionEvent>(event);
+	std::shared_ptr<ScoreEvent> scoreEvent = std::dynamic_pointer_cast<ScoreEvent>(event);
+	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
+
+	if (collisionEvent != nullptr)
+	{
+		PlayCollision();
+	}
+
+	if (scoreEvent != nullptr)
+	{
+		PlayScore();
+	}
+
+	if (looseEvent != nullptr)
+	{
+		PlayEnd();
+	}
 }

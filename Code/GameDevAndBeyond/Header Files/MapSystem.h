@@ -10,9 +10,9 @@ public:
 	MapSystem();
 	~MapSystem();
 public:
-	virtual void Init(Engine* engine);
-	virtual bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
-	virtual void Update(Engine* engine, float dt) override;
+	void Init(Engine* engine) override;
+	bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
+	void Update(Engine* engine, float dt) override;
 	void UpdateMap();
 
 private:
@@ -23,7 +23,6 @@ private:
 	std::shared_ptr<EventHandler> m_Listener;
 	EventFunctor m_PhysicsUpdateEventFunctor;
 	float m_DeltaTime;
-	// TODO: Draw from Matrix, only work with matrix in physics system
 	std::atomic_bool m_MapMatrix[20][10] = { 0 };
 	std::atomic_bool m_CollisionHasHappened = false;
 	Engine* m_Engine;
