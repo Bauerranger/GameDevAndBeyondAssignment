@@ -21,8 +21,6 @@ MapSystem::MapSystem()
 
 MapSystem::~MapSystem()
 {
-	// TODO find out why this line stops window from closing
-	// delete(m_Engine);
 	m_Listener->RemoveCallback(m_PhysicsUpdateEventFunctor);
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
 }
