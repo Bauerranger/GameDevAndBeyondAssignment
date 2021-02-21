@@ -10,6 +10,7 @@
 #include <SFMLEngine/Header Files/SpriteComponent.h>
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 MapSystem::MapSystem()
 {
@@ -100,6 +101,8 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 			++entityItr;
 		}
 
+		int score = 0;
+		bool didScore = false;
 		for (int i = 0; i < mapSizeY; i++)
 		{
 			int counter = 0;
@@ -122,6 +125,8 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 					{
 						m_MapMatrix[matrixPosY][matrixPosX] = false;
 						m_Engine->RemoveEntity(entity);
+						didScore = true;
+						score++;
 					}
 					++entityItr;
 				}
@@ -143,9 +148,14 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 					}
 					++entityItr;
 				}
-				// Score
-				// TODO make nice score
 			}
+		}
+		if (didScore) 
+		{
+			std::shared_ptr<ScoreEvent> scoreEvent = std::make_shared<ScoreEvent>();
+			score = score / 10 * score / 10;
+			scoreEvent->Score = score;
+			EventManager::GetInstance().PushEvent(scoreEvent);
 		}
 		UpdateMap();
 	}

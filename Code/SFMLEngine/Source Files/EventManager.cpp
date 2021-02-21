@@ -1,4 +1,5 @@
 #include "../Header Files/EventManager.h"
+#include "GameDevAndBeyond/Header Files/Events.h"
 
 EventManager::EventManager()
 {
@@ -38,9 +39,8 @@ void EventManager::Update()
 {
 	while (!m_Events.empty())
 	{
-		std::shared_ptr<IEvent> event = m_Events.back();
+		std::shared_ptr<IEvent> event = m_Events.front();
 		m_Events.pop();
-
 		std::vector<std::shared_ptr<IEventHandler>> copiedListeners = m_Listeners;
 		for (std::shared_ptr<IEventHandler> listener : m_Listeners)
 		{

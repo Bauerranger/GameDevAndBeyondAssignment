@@ -63,9 +63,11 @@ private:
 	void MoveBrickEntities(bool  rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, int mostLeftMatrixPosition, int mostTopMatrixPosition);
 	void CheckIfRotationPossible(bool  rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, std::vector<std::shared_ptr<Entity>> &unmovedEntities, bool &retflag);
 	void SetSpritePosOnWindow(std::vector<std::shared_ptr<Entity>> &movedEntities, int movedEntitiesCounter, int brickMatrixPosX, int brickMatrixPosY);
-	
+
+	/////////////////////////////////////////////////////Spawn
 	void SpawnBlock();
 	void ResetPosition();
+	bool m_IsEnd = false;
 
 	/////////////////////////////////////////////////////Singleton
 	static BlockSystem* s_pInstance;

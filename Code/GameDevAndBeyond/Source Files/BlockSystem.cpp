@@ -457,6 +457,10 @@ inline void BlockSystem::SetSpritePosOnWindow(	std::vector<std::shared_ptr<Entit
 
 void BlockSystem::SpawnBlock()
 {
+	if (m_IsEnd) 
+	{
+		return;
+	}
 	ResetPosition();
 	m_CurrentRotation = 0;
 	srand(time(nullptr));
@@ -474,7 +478,7 @@ void BlockSystem::SpawnBlock()
 					int matrixPosX = 0;
 					int matrixPosY = 0;
 					entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
-					if (matrixPosX == e + 4 && matrixPosY == i) 
+					if (matrixPosX == e + 4 && matrixPosY == i)
 					{
 						std::shared_ptr<LooseEvent> looseEvent = std::make_shared<LooseEvent>();
 						EventManager::GetInstance().PushEvent(looseEvent);
@@ -525,6 +529,7 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 	{
 		std::cout << "End ";
 		//TODO: Make end, stop physicupdates
+		//TODO: rework m_engine to instance getengine
 	}
 	if (scoreEvent != nullptr)
 	{
@@ -538,4 +543,9 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 }
 void BlockSystem::OnLoose(std::shared_ptr<IEvent> event)
 {
+	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
+	if(looseEvent)
+	{
+		m_IsEnd = true;
+	}
 }
