@@ -60,7 +60,6 @@ BlockSystem::~BlockSystem()
 void BlockSystem::Init(Engine * engine)
 {
 	// TODO: Make block spawn after init (Maybe a start function)
-	SpawnBlock();
 }
 
 bool BlockSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
@@ -77,6 +76,12 @@ bool BlockSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void BlockSystem::Update(Engine * engine, float dt)
 {
+	eGameState state;
+	Engine::Instance()->GetGameState(state);
+	if (state != eGameState::game)
+	{
+		return;
+	}
 	UpdateEntities(engine, dt);
 }
 
@@ -515,9 +520,15 @@ void BlockSystem::ResetPosition()
 
 void BlockSystem::OnEvent(std::shared_ptr<IEvent> event)
 {
-	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
+	std::shared_ptr<GameStartEvent> startEvent = std::dynamic_pointer_cast<GameStartEvent>(event);
 	std::shared_ptr<SpawnEvent> spawnEvent = std::dynamic_pointer_cast<SpawnEvent>(event);
 	std::shared_ptr<ScoreEvent> scoreEvent = std::dynamic_pointer_cast<ScoreEvent>(event);
+	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
+	if (startEvent != nullptr)
+	{
+		std::cout << "Start ";
+		SpawnBlock();
+	}
 	if (looseEvent != nullptr)
 	{
 		std::cout << "End ";

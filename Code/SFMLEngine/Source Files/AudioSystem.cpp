@@ -48,8 +48,6 @@ void AudioSystem::Init(Engine* engine)
 	m_EventFunctor = std::bind(&AudioSystem::OnEvent, this, std::placeholders::_1);
 	m_Listener->AddCallback(m_EventFunctor);
 	EventManager::GetInstance().AddEventListener(m_Listener);
-	// TODO: Make music start at game start
-	PlayMusic();
 }
 
 inline bool AudioSystem::UpdateSingleEntity(Engine* engine, std::shared_ptr<Entity> entity, float dt)
@@ -101,9 +99,16 @@ void AudioSystem::PlayEnd()
 
 void AudioSystem::OnEvent(std::shared_ptr<IEvent> event)
 {
+	std::shared_ptr<GameStartEvent> startEvent = std::dynamic_pointer_cast<GameStartEvent>(event);
 	std::shared_ptr<CollisionEvent> collisionEvent = std::dynamic_pointer_cast<CollisionEvent>(event);
 	std::shared_ptr<ScoreEvent> scoreEvent = std::dynamic_pointer_cast<ScoreEvent>(event);
 	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
+
+
+	if (startEvent != nullptr)
+	{
+		PlayMusic();
+	}
 
 	if (collisionEvent != nullptr)
 	{

@@ -19,6 +19,14 @@ enum class eThreadImportance : std::int16_t
 	worker,
 	render
 };
+
+enum class eGameState : std::int16_t
+{
+	start,
+	game,
+	end
+};
+
 class Engine
 {
 public:
@@ -43,6 +51,10 @@ public:
 	bool IsMousePressed(MouseButton button);
 	bool IsKeyPressed(Key key);
 	void GetCursorPosition(float& X, float& Y) const;
+
+	///////////////////////////////////////////////////// Game State
+	void GetGameState(eGameState& state) { state = m_GameState; };
+	void SetGameState(eGameState state) { m_GameState = state; };
 
 	///////////////////////////////////////////////////// Time handling
 	const float GetElapsedTimeAsSeconds();
@@ -79,6 +91,9 @@ private:
 	std::vector <std::shared_ptr<ISystem>> m_RenderSystems;
 
 	const float m_dt = 1/60.f;
+
+	///////////////////////////////////////////////////// Game State
+	eGameState m_GameState = eGameState::start;
 
 	///////////////////////////////////////////////////// Threading
 	std::thread m_WorkerThread;

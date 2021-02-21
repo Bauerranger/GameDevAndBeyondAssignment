@@ -20,7 +20,6 @@ private:
 	EventFunctor m_EventFunctor;
 	int m_Score = 0;
 	int m_Health = 0;
-	bool m_Dead = false;
-	bool m_Won = false;
-	std::string m_Name = "";
+
+	std::string m_Name;
 };

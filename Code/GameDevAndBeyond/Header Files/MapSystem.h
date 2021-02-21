@@ -16,7 +16,8 @@ public:
 	void UpdateMap();
 
 private:
-	void LoadUI(Engine* engine);
+	void LoadStartUI();
+	void LoadGameUI();
 	void UpdateSingleEntityPosition(std::shared_ptr<Entity> entity, float dt);
 	void UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, float dt);
 	void OnEvent(std::shared_ptr<IEvent> event);

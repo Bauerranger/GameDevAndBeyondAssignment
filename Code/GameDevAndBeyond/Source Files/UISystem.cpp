@@ -34,7 +34,7 @@ bool UISystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 	}
 	return false;
 }
-
+// TODO: only update when needed
 void UISystem::Update(Engine* engine, float dt)
 {
 	if (m_Entities.size() == 0)
@@ -48,34 +48,34 @@ void UISystem::Update(Engine* engine, float dt)
 		std::shared_ptr<TextComponent> textComp = entity->GetComponent<TextComponent>();
 		std::shared_ptr<ScoreComponent> scoreComp = entity->GetComponent<ScoreComponent>();
 		std::shared_ptr<IOComponent> iOComp = entity->GetComponent<IOComponent>();
+
+		eGameState state;
+		Engine::Instance()->GetGameState(state);
 		if (scoreComp != nullptr)
 		{
 			scoreComp->SetScore(m_Score);
-			if (m_Dead)
+			if (state == eGameState::end)
 			{
 				textComp->SetPosition(1600 / 5, 900 / 3);
 				textComp->SetSize(48);
-				textComp->SetText("You are dead! Your score is\n" + std::to_string(m_Score));
-			}
-			else if (m_Won)
-			{
-				textComp->SetPosition(1600 / 5, 900 / 3);
-				textComp->SetSize(48);
-				textComp->SetText("You won! Your score is\n" + std::to_string(m_Score));
+				textComp->SetText("GAME OVER!\n Your score is\n" + std::to_string(m_Score));
 			}
 			else
 			{
 				textComp->SetText("Score: " + std::to_string(m_Score));
 			}
-		}
+		} else
 		if (iOComp != nullptr)
 		{
-			if (m_Dead || m_Won)
+			if (state == eGameState::end)
 			{
-				textComp->SetPosition(1600 / 5, 900 / 2);
+				int windowSizeX = 0;
+				int windowSizeY = 0;
+				engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+				textComp->SetPosition(windowSizeX / 5, windowSizeY / 2);
 				textComp->SetSize(48);
 				int highscore = 0;
-				std::string highscoreChampion = "";
+				std::string highscoreChampion;
 				iOComp->GetScore(highscoreChampion, highscore);
 				char input = A;
 				InputHelper::GetInput(input);
@@ -104,6 +104,22 @@ void UISystem::Update(Engine* engine, float dt)
 						iOComp->SaveScoreToDrive();
 					}
 				}
+			}
+		}
+		else 
+		{
+			if(state == eGameState::start)
+			{
+				int windowSizeX = 0;
+				int windowSizeY = 0;
+				engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+				textComp->SetPosition(windowSizeX / 5, windowSizeY / 2);
+				textComp->SetSize(48);
+				textComp->SetText("PRESS ANY KEY TO START GAME");
+			}
+			else 
+			{
+				textComp->SetText("");
 			}
 		}
 		++entityItr;

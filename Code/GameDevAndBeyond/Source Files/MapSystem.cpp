@@ -28,7 +28,7 @@ MapSystem::~MapSystem()
 
 void MapSystem::Init(Engine* engine)
 {
-	LoadUI(engine);
+	LoadStartUI();
 }
 
 bool MapSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
@@ -42,6 +42,14 @@ bool MapSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void MapSystem::Update(Engine* engine, float dt)
 {
+	eGameState state;
+	Engine::Instance()->GetGameState(state);
+
+	if (state == eGameState::start && engine->IsKeyPressed(Key::H))
+	{
+		std::shared_ptr<GameStartEvent> startEvent = std::make_shared<GameStartEvent>();
+		EventManager::GetInstance().PushEvent(startEvent);
+	}
 	m_DeltaTime = dt;
 }
 
@@ -190,7 +198,22 @@ void MapSystem::UpdateMap()
 
 void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 {
+	std::shared_ptr<GameStartEvent> startEvent = std::dynamic_pointer_cast<GameStartEvent>(event);
+	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
+
+	if (looseEvent != nullptr)
+	{
+		Engine::Instance()->SetGameState(eGameState::end);
+	}
+
+	if (startEvent != nullptr)
+	{
+		LoadGameUI();
+		Engine::Instance()->SetGameState(eGameState::game);
+	}
+
 	std::shared_ptr<PhysicUpdateEvent> physicUpdateEvent = std::dynamic_pointer_cast<PhysicUpdateEvent>(event);
+
 	if (physicUpdateEvent != nullptr)
 	{
 		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
@@ -219,7 +242,23 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 	}
 }
 
-void MapSystem::LoadUI(Engine* engine)
+void MapSystem::LoadStartUI()
+{
+	std::shared_ptr<Entity> startGameUI = std::make_shared<Entity>();
+	std::shared_ptr<TextComponent> startGameText = startGameUI->AddComponent<TextComponent>();
+
+	startGameText->SetFont("../bin/Jamma.ttf");
+	startGameText->SetColor(255, 255, 255, 255); 
+	int windowSizeX = 0;
+	int windowSizeY = 0;
+	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+	startGameText->SetPosition(windowSizeX / 2, windowSizeY / 2);
+	startGameText->SetSize(60);
+
+	Engine::Instance()->AddEntity(startGameUI);
+}
+
+void MapSystem::LoadGameUI()
 {
 	std::shared_ptr<Entity> iOEntity = std::make_shared<Entity>();
 	std::shared_ptr<TextComponent> iOText = iOEntity->AddComponent<TextComponent>();
@@ -230,7 +269,7 @@ void MapSystem::LoadUI(Engine* engine)
 	iOText->SetPosition(10.0f, 10.0f);
 	iOText->SetSize(24);
 
-	engine->AddEntity(iOEntity);
+	Engine::Instance()->AddEntity(iOEntity);
 
 	std::shared_ptr<Entity> scoreEntity = std::make_shared<Entity>();
 	std::shared_ptr<TextComponent> scoreText = scoreEntity->AddComponent<TextComponent>();
@@ -241,6 +280,6 @@ void MapSystem::LoadUI(Engine* engine)
 	scoreText->SetPosition(10.0f, 10.0f);
 	scoreText->SetSize(24);
 
-	engine->AddEntity(scoreEntity);
+	Engine::Instance()->AddEntity(scoreEntity);
 }
 

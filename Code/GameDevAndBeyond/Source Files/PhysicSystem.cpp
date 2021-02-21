@@ -30,6 +30,12 @@ bool PhysicSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void PhysicSystem::Update(Engine * engine, float dt)
 {
+	eGameState state;
+	Engine::Instance()->GetGameState(state);
+	if (state != eGameState::game) 
+	{
+		return;
+	}
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 	
 	m_TickTime += dt;

@@ -5,9 +5,12 @@ AudioComponent::AudioComponent(const std::string fileName, const bool isLooping)
 	: m_FileName(fileName), m_IsLooping(isLooping)
 { 
 	m_pSoundBuffer = std::make_shared<sf::SoundBuffer>();
-	m_pSound = std::make_shared<sf::Sound>();
-	if (!m_pSoundBuffer->loadFromFile(m_FileName))
+	if (!m_pSoundBuffer->loadFromFile(m_FileName)) 
+	{
 		std::cout << "ERROR: Could not load sound file from " << m_FileName << std::endl;
+		return;
+	}
+	m_pSound = std::make_shared<sf::Sound>();
 	m_pSound->setBuffer(*m_pSoundBuffer);
 	m_pSound->setLoop(m_IsLooping);
 }
@@ -80,4 +83,14 @@ void AudioComponent::StopAudio()
 void AudioComponent::CalculatePlayedTime(float dt) 
 { 
 	m_PlayedTime += dt;
+}
+
+void AudioComponent::OnEvent(std::shared_ptr<IEvent> event)
+{
+	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
+
+	if (looseEvent != nullptr && m_IsLooping)
+	{
+		StopAudio();
+	}
 }
