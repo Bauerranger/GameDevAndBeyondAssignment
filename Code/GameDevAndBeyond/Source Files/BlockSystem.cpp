@@ -23,19 +23,19 @@ BlockSystem::BlockSystem()
 	m_EventListener->AddCallback(m_EventFunctor);
 	EventManager::GetInstance().AddEventListener(m_EventListener);
 	//setting up different shapes for the blocks
-	BlockShape longBlock =	{	1,1,1,1,
+	BlockShape longBlock = { 1,1,1,1,
 								0,0,0,0 };
-	BlockShape tBlock =		{	0,1,1,1,
+	BlockShape tBlock = { 0,1,1,1,
 								0,0,1,0 };
-	BlockShape leftZBlock =	{	0,1,1,0,
+	BlockShape leftZBlock = { 0,1,1,0,
 								0,0,1,1 };
-	BlockShape rightZBlock ={	0,1,1,0,
+	BlockShape rightZBlock = { 0,1,1,0,
 								1,1,0,0 };
-	BlockShape leftLBlock =	{	0,1,1,1,
+	BlockShape leftLBlock = { 0,1,1,1,
 								0,1,0,0 };
-	BlockShape rightLBlock ={	1,1,1,0,
+	BlockShape rightLBlock = { 1,1,1,0,
 								0,0,1,0 };
-	BlockShape twoByTwoBlock = {0,1,1,0,
+	BlockShape twoByTwoBlock = { 0,1,1,0,
 								0,1,1,0 };
 	m_BlockShapes.insert(std::pair<int, BlockShape>(0, longBlock));
 	m_BlockShapes.insert(std::pair<int, BlockShape>(1, tBlock));
@@ -57,7 +57,7 @@ BlockSystem::~BlockSystem()
 	m_EventListener->RemoveCallback(m_EventFunctor);
 }
 
-void BlockSystem::Init(Engine * engine)
+void BlockSystem::Init(Engine* engine)
 {
 	// TODO: Make block spawn after init (Maybe a start function)
 }
@@ -74,8 +74,12 @@ bool BlockSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 	return false;
 }
 
-void BlockSystem::Update(Engine * engine, float dt)
+void BlockSystem::Update(Engine* engine, float dt)
 {
+	if (!Engine::Instance()->IsRunning())
+	{
+		return;
+	}
 	eGameState state;
 	Engine::Instance()->GetGameState(state);
 	if (state != eGameState::game)
@@ -85,7 +89,7 @@ void BlockSystem::Update(Engine * engine, float dt)
 	UpdateEntities(engine, dt);
 }
 
-inline bool BlockSystem::UpdateEntities(Engine * engine, float dt)
+inline bool BlockSystem::UpdateEntities(Engine* engine, float dt)
 {
 	if (m_ReadyForDropKeyPress)
 	{
@@ -120,7 +124,7 @@ inline bool BlockSystem::UpdateEntities(Engine * engine, float dt)
 	return true;
 }
 
-inline void BlockSystem::MoveLeft(Engine * engine)
+inline void BlockSystem::MoveLeft(Engine* engine)
 {
 	if (engine->IsKeyPressed(Key::A) || engine->IsKeyPressed(Key::Left))
 	{
@@ -177,7 +181,7 @@ inline void BlockSystem::MoveLeft(Engine * engine)
 	}
 }
 
-inline void BlockSystem::MoveRight(Engine * engine)
+inline void BlockSystem::MoveRight(Engine* engine)
 {
 	if (engine->IsKeyPressed(Key::D) || engine->IsKeyPressed(Key::Right))
 	{
@@ -234,7 +238,7 @@ inline void BlockSystem::MoveRight(Engine * engine)
 	}
 }
 
-inline void BlockSystem::Drop(Engine * engine)
+inline void BlockSystem::Drop(Engine* engine)
 {
 	if (engine->IsKeyPressed(Key::S) || engine->IsKeyPressed(Key::Down))
 	{
@@ -253,7 +257,7 @@ inline void BlockSystem::Drop(Engine * engine)
 	}
 }
 
-inline void BlockSystem::Rotation(Engine * engine)
+inline void BlockSystem::Rotation(Engine* engine)
 {
 	if (engine->IsKeyPressed(Key::Space) || engine->IsKeyPressed(Key::Up) || engine->IsKeyPressed(Key::W))
 	{
@@ -349,12 +353,12 @@ inline void BlockSystem::Rotation(Engine * engine)
 
 		bool retflag;
 		CheckIfRotationPossible(rotationArray, movedEntities, movedEntitiesCounter, unmovedEntities, retflag);
-		if (retflag) 
-		{ 
+		if (retflag)
+		{
 			--m_CurrentRotation;
-			return; 
+			return;
 		}
-		movedEntitiesCounter = 0; 
+		movedEntitiesCounter = 0;
 		MoveBrickEntities(rotationArray, movedEntities, movedEntitiesCounter, mostLeftMatrixPosition, mostTopMatrixPosition);
 
 		if (m_CurrentRotation >= m_MaximumRotations)
@@ -365,7 +369,7 @@ inline void BlockSystem::Rotation(Engine * engine)
 	}
 }
 
-inline void BlockSystem::GetUnmovedEntities(std::vector<std::shared_ptr<Entity>> &copiedEntities, std::vector<std::shared_ptr<Entity>> &unmovedEntities)
+inline void BlockSystem::GetUnmovedEntities(std::vector<std::shared_ptr<Entity>>& copiedEntities, std::vector<std::shared_ptr<Entity>>& unmovedEntities)
 {
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
@@ -378,11 +382,11 @@ inline void BlockSystem::GetUnmovedEntities(std::vector<std::shared_ptr<Entity>>
 	}
 }
 
-inline void BlockSystem::MoveBrickEntities(	bool rotationArray[4][4], 
-											std::vector<std::shared_ptr<Entity>> &movedEntities, 
-											int &movedEntitiesCounter, 
-											int mostLeftMatrixPosition,
-											int mostTopMatrixPosition)
+inline void BlockSystem::MoveBrickEntities(bool rotationArray[4][4],
+	std::vector<std::shared_ptr<Entity>>& movedEntities,
+	int& movedEntitiesCounter,
+	int mostLeftMatrixPosition,
+	int mostTopMatrixPosition)
 {
 	for (int i = 0; i < 4; ++i)
 	{
@@ -399,7 +403,7 @@ inline void BlockSystem::MoveBrickEntities(	bool rotationArray[4][4],
 	}
 }
 
-inline void BlockSystem::CheckIfRotationPossible(bool rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, std::vector<std::shared_ptr<Entity>> &unmovedEntities, bool &retflag)
+inline void BlockSystem::CheckIfRotationPossible(bool rotationArray[4][4], std::vector<std::shared_ptr<Entity>>& movedEntities, int& movedEntitiesCounter, std::vector<std::shared_ptr<Entity>>& unmovedEntities, bool& retflag)
 {
 	retflag = true;
 	for (int i = 0; i < 4; ++i)
@@ -413,7 +417,7 @@ inline void BlockSystem::CheckIfRotationPossible(bool rotationArray[4][4], std::
 				int movedMatrixPosY = 0;
 				brickComponent->GetBrickMatrixPosition(movedMatrixPosX, movedMatrixPosY);
 
-				if (movedMatrixPosX < 0 || movedMatrixPosX >= 9) 
+				if (movedMatrixPosX < 0 || movedMatrixPosX >= 9)
 				{
 					return;
 				}
@@ -439,10 +443,10 @@ inline void BlockSystem::CheckIfRotationPossible(bool rotationArray[4][4], std::
 	retflag = false;
 }
 
-inline void BlockSystem::SetSpritePosOnWindow(	std::vector<std::shared_ptr<Entity>> &movedEntities,
-												int movedEntitiesCounter,
-												int brickMatrixPosX,
-												int brickMatrixPosY)
+inline void BlockSystem::SetSpritePosOnWindow(std::vector<std::shared_ptr<Entity>>& movedEntities,
+	int movedEntitiesCounter,
+	int brickMatrixPosX,
+	int brickMatrixPosY)
 {
 	std::shared_ptr<SpriteComponent> spriteComponent = movedEntities[movedEntitiesCounter]->GetComponent<SpriteComponent>();
 	float spritePosX = brickMatrixPosX * 45;
@@ -455,7 +459,7 @@ inline void BlockSystem::SetSpritePosOnWindow(	std::vector<std::shared_ptr<Entit
 
 void BlockSystem::SpawnBlock()
 {
-	if (m_IsEnd) 
+	if (m_IsEnd)
 	{
 		return;
 	}

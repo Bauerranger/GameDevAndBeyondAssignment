@@ -30,6 +30,10 @@ bool PhysicSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void PhysicSystem::Update(Engine * engine, float dt)
 {
+	if(!Engine::Instance()->IsRunning())
+	{
+		return;
+	}
 	eGameState state;
 	Engine::Instance()->GetGameState(state);
 	if (state != eGameState::game) 

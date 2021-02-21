@@ -42,14 +42,18 @@ bool MapSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void MapSystem::Update(Engine* engine, float dt)
 {
+	if (!Engine::Instance()->IsRunning())
+	{
+		return;
+	}
 	eGameState state;
 	Engine::Instance()->GetGameState(state);
-
-	if (state == eGameState::start && engine->IsKeyPressed(Key::H))
+	if (state == eGameState::start && engine->IsKeyPressed(Key::Space))
 	{
 		std::shared_ptr<GameStartEvent> startEvent = std::make_shared<GameStartEvent>();
 		EventManager::GetInstance().PushEvent(startEvent);
 	}
+
 	m_DeltaTime = dt;
 }
 
@@ -92,7 +96,7 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 			collisionHasHappened = true;
 		}
 	}
-	
+
 	if (collisionHasHappened)
 	{
 		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
@@ -157,7 +161,7 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 				}
 			}
 		}
-		if (didScore) 
+		if (didScore)
 		{
 			std::shared_ptr<ScoreEvent> scoreEvent = std::make_shared<ScoreEvent>();
 			score = score / 10 * score / 10;
@@ -174,9 +178,9 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 
 void MapSystem::UpdateMap()
 {
-	for (auto & rows : m_MapMatrix)
+	for (auto& rows : m_MapMatrix)
 	{
-		for (auto & collumns : rows)
+		for (auto& collumns : rows)
 		{
 			collumns = false;
 		}
@@ -185,7 +189,7 @@ void MapSystem::UpdateMap()
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
 		std::shared_ptr<Entity> entity = *entityItr;
-		if(entity->GetComponent<BrickComponent>())
+		if (entity->GetComponent<BrickComponent>())
 		{
 			int currentMatrixPositionX = 0;
 			int currentMatrixPositionY = 0;
@@ -248,7 +252,7 @@ void MapSystem::LoadStartUI()
 	std::shared_ptr<TextComponent> startGameText = startGameUI->AddComponent<TextComponent>();
 
 	startGameText->SetFont("../bin/Jamma.ttf");
-	startGameText->SetColor(255, 255, 255, 255); 
+	startGameText->SetColor(255, 255, 255, 255);
 	int windowSizeX = 0;
 	int windowSizeY = 0;
 	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
