@@ -18,11 +18,8 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 
 Engine::~Engine()
 {
-	if (m_IsRunning) 
-	{
-		JoinThreads();
-	}
 	m_IsRunning = false;
+	JoinThreads();
 }
 
 void Engine::Update()
@@ -30,6 +27,7 @@ void Engine::Update()
 	m_Time->Restart();
 
 	const float elapsedTime = GetElapsedTimeAsSeconds();
+
 	m_AccumulatedTime += elapsedTime;
 
 	while (m_AccumulatedTime >= m_dt)
@@ -38,10 +36,9 @@ void Engine::Update()
 		{
 			//Window has been closed
 			m_IsRunning = false;
-			m_AccumulatedTime -= m_dt;
 			return;
 		}
-		for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
+		for (std::shared_ptr<ISystem> system : m_DirectSystems)
 		{
 			system->Update(this, m_dt);
 		}
@@ -60,9 +57,13 @@ void Engine::UpdateWorkerSystems()
 		while (m_AccumulatedTime >= m_dt)
 		{
 			//update all systems
-			for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
+			for (std::shared_ptr<ISystem> system : m_WorkerSystems)
 			{
 				system->Update(this, m_dt);
+			}
+			if (!m_IsRunning)
+			{
+				return;
 			}
 		}
 	}
@@ -77,9 +78,14 @@ void Engine::UpdateRenderSystems()
 		while (m_AccumulatedTime >= m_dt)
 		{
 			//update all systems
-			for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
+			for (std::shared_ptr<ISystem> system : m_RenderSystems)
 			{
 				system->Update(this, m_dt);
+			}
+			if (!m_IsRunning)
+			{
+				Draw();
+				return;
 			}
 		}
 		Draw();
@@ -123,7 +129,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 	}
 	m_Entities.push_back(entity);
 
-	for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
+	for (std::shared_ptr<ISystem> system : m_DirectSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -131,7 +137,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		}
 	}
 
-	for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
+	for (std::shared_ptr<ISystem> system : m_WorkerSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -139,7 +145,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		}
 	}
 
-	for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
+	for (std::shared_ptr<ISystem> system : m_RenderSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -157,17 +163,17 @@ void Engine::RemoveEntity(std::shared_ptr<Entity> entity)
 	}
 	m_Entities.erase(entityIterator);
 
-	for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
+	for (std::shared_ptr<ISystem> system : m_DirectSystems)
 	{
 		system->RemoveEntity(entity);
 	}
 
-	for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
+	for (std::shared_ptr<ISystem> system : m_WorkerSystems)
 	{
 		system->RemoveEntity(entity);
 	}
 
-	for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
+	for (std::shared_ptr<ISystem> system : m_RenderSystems)
 	{
 		system->RemoveEntity(entity);
 	}
@@ -202,7 +208,7 @@ void Engine::AddSystem(std::shared_ptr<ISystem> system, eThreadImportance import
 		break;
 	}
 
-	for (const std::shared_ptr<Entity>& entity : m_Entities)
+	for (std::shared_ptr<Entity> entity : m_Entities)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
