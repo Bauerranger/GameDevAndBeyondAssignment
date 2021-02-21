@@ -44,7 +44,6 @@ void AudioSystem::Update(Engine* engine, float dt)
 
 void AudioSystem::Init(Engine* engine) 
 {
-	m_Engine = engine;
 	m_Listener = std::make_shared<EventHandler>();
 	m_EventFunctor = std::bind(&AudioSystem::OnEvent, this, std::placeholders::_1);
 	m_Listener->AddCallback(m_EventFunctor);
@@ -66,7 +65,7 @@ void AudioSystem::PlayMusic()
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Tetris_theme.ogg", true);
-		m_Engine->AddEntity(entity);
+		Engine::Instance()->AddEntity(entity);
 	}
 }
 
@@ -76,7 +75,7 @@ void AudioSystem::PlayScore()
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Score.ogg", false);
-		m_Engine->AddEntity(entity);
+		Engine::Instance()->AddEntity(entity);
 	}
 }
 
@@ -86,7 +85,7 @@ void AudioSystem::PlayCollision()
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Collision.ogg", false);
-		m_Engine->AddEntity(entity);
+		Engine::Instance()->AddEntity(entity);
 	}
 }
 
@@ -96,7 +95,7 @@ void AudioSystem::PlayEnd()
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/End.ogg", false);
-		m_Engine->AddEntity(entity);
+		Engine::Instance()->AddEntity(entity);
 	}
 }
 

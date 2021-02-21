@@ -11,18 +11,18 @@ public:
 	BlockSystem();
 	~BlockSystem();
 
-	/////////////////////////////////////////////////////Singleton
+	///////////////////////////////////////////////////// Singleton
 	static BlockSystem* Instance();
 public:
 
-	/////////////////////////////////////////////////////ISystem
+	///////////////////////////////////////////////////// ISystem
 	void Init(Engine* engine) override;
 	bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
 	void Update(Engine* engine, float dt) override;
 	std::vector<std::shared_ptr<Entity>> GetBrickEntities() { return m_Entities; };
 private:
 
-	/////////////////////////////////////////////////////Block types
+	///////////////////////////////////////////////////// Block types
 	struct BlockShape
 	{
 		bool BlockShape[2][4];
@@ -32,7 +32,7 @@ private:
 	short unsigned int m_CurrentRotation = 0;
 	const int m_MaximumRotations = 4;
 
-	/////////////////////////////////////////////////////Controls
+	///////////////////////////////////////////////////// Controls
 	bool m_ReadyForLeftKeyPress = false;
 	bool m_ReadyForRightKeyPress = false;
 	bool m_ReadyForDropKeyPress = false;
@@ -43,7 +43,7 @@ private:
 	void MoveRight(Engine* engine);
 	void Rotation(Engine* engine);
 
-	/////////////////////////////////////////////////////Events
+	///////////////////////////////////////////////////// Events
 	std::shared_ptr<EventHandler> m_CollisionListener;
 	std::shared_ptr<EventHandler> m_LooseListener;
 	EventFunctor m_CollisionEventFunctor;
@@ -52,23 +52,22 @@ private:
 	void OnCollision(std::shared_ptr<IEvent> event);
 	void OnLoose(std::shared_ptr<IEvent> event);
 
-	/////////////////////////////////////////////////////Engine
+	///////////////////////////////////////////////////// Engine
 	float m_TickTime = 0;
-	Engine* m_Engine;
 
 	bool inline UpdateEntities(Engine* engine, float dt);
 
-	/////////////////////////////////////////////////////Movement
+	///////////////////////////////////////////////////// Movement
 	void GetUnmovedEntities(std::vector<std::shared_ptr<Entity>> &copiedEntities, std::vector<std::shared_ptr<Entity>> &unmovedEntities);
 	void MoveBrickEntities(bool  rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, int mostLeftMatrixPosition, int mostTopMatrixPosition);
 	void CheckIfRotationPossible(bool  rotationArray[4][4], std::vector<std::shared_ptr<Entity>> &movedEntities, int &movedEntitiesCounter, std::vector<std::shared_ptr<Entity>> &unmovedEntities, bool &retflag);
 	void SetSpritePosOnWindow(std::vector<std::shared_ptr<Entity>> &movedEntities, int movedEntitiesCounter, int brickMatrixPosX, int brickMatrixPosY);
 
-	/////////////////////////////////////////////////////Spawn
+	///////////////////////////////////////////////////// Spawn
 	void SpawnBlock();
 	void ResetPosition();
 	bool m_IsEnd = false;
 
-	/////////////////////////////////////////////////////Singleton
+	///////////////////////////////////////////////////// Singleton
 	static BlockSystem* s_pInstance;
 };

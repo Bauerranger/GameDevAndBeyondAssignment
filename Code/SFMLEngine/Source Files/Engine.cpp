@@ -4,8 +4,17 @@
 #include <algorithm>
 #include <iostream>
 
+Engine* Engine::s_pInstance = nullptr;
+
+Engine* Engine::Instance()
+{
+	return s_pInstance;
+}
+
 Engine::Engine(int width, int height, std::string text, bool fullscreen)
 {
+	//setting up singleton
+	s_pInstance = this;
 	m_IsRunning = true;
 	m_Window = std::make_shared<Window>(width, height, text, fullscreen);
 	m_Time = std::make_unique<Time>();
@@ -18,6 +27,10 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 
 Engine::~Engine()
 {
+	if (s_pInstance == this)
+	{
+		s_pInstance = nullptr;
+	}
 	m_IsRunning = false;
 	JoinThreads();
 }

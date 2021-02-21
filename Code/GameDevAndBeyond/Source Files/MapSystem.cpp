@@ -28,7 +28,6 @@ MapSystem::~MapSystem()
 
 void MapSystem::Init(Engine* engine)
 {
-	m_Engine = engine;
 	LoadUI(engine);
 }
 
@@ -124,7 +123,7 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 					if (matrixPosY == i)
 					{
 						m_MapMatrix[matrixPosY][matrixPosX] = false;
-						m_Engine->RemoveEntity(entity);
+						Engine::Instance()->RemoveEntity(entity);
 						didScore = true;
 						score++;
 					}

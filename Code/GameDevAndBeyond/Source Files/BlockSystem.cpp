@@ -65,7 +65,6 @@ BlockSystem::~BlockSystem()
 
 void BlockSystem::Init(Engine * engine)
 {
-	m_Engine = engine;
 	// TODO: Make block spawn after init (Maybe a start function)
 	SpawnBlock();
 }
@@ -451,7 +450,7 @@ inline void BlockSystem::SetSpritePosOnWindow(	std::vector<std::shared_ptr<Entit
 	float spritePosY = brickMatrixPosY * 45;
 	int windowSizeX = 0;
 	int windowSizeY = 0;
-	m_Engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
 	spriteComponent->SetPosition((brickMatrixPosX) * 45 + windowSizeX / 3, brickMatrixPosY * 45 + windowSizeY / 20);
 }
 
@@ -495,9 +494,9 @@ void BlockSystem::SpawnBlock()
 				brickSprite->SetColor(m_ShapeKey);
 				int windowSizeX = 0;
 				int windowSizeY = 0;
-				m_Engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+				Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
 				brickSprite->SetPosition((e + 4) * 45 + windowSizeX / 3, i * 45 + static_cast<int>(windowSizeY / 20));
-				m_Engine->AddEntity(brickEntity);
+				Engine::Instance()->AddEntity(brickEntity);
 			}
 		}
 	}
@@ -507,7 +506,7 @@ void BlockSystem::ResetPosition()
 {
 	int windowSizeX = 0;
 	int windowSizeY = 0;
-	m_Engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
@@ -529,7 +528,6 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 	{
 		std::cout << "End ";
 		//TODO: Make end, stop physicupdates
-		//TODO: rework m_engine to instance getengine
 	}
 	if (scoreEvent != nullptr)
 	{

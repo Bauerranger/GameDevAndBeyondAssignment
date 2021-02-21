@@ -25,6 +25,5 @@ private:
 	float m_DeltaTime;
 	std::atomic_bool m_MapMatrix[20][10] = { 0 };
 	std::atomic_bool m_CollisionHasHappened = false;
-	Engine* m_Engine;
 	std::vector<std::shared_ptr<Entity>> m_MarkedForDelete;
 };
