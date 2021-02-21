@@ -10,8 +10,8 @@ public:
 	~PhysicSystem();
 	//ISystem
 public:
-	virtual bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
-	virtual void Update(Engine* engine, float dt) override;
+	bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
+	void Update(Engine* engine, float dt) override;
 	
 private:
 	void inline UpdateSingleEntityPosition(std::shared_ptr<Entity> entity, float dt);

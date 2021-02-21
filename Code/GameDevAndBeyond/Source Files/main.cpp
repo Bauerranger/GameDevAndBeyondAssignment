@@ -7,19 +7,15 @@
 #include "../Header Files/UISystem.h"
 #include "../Header Files/MapSystem.h"
 
-#ifdef _DEBUG
-#define EngineMain main
-#else
-#define EngineMain WinMain
-#endif
 
-int EngineMain()
+int main()
 {
-
+	// Engine initialization with window settings
 	int width = 1920;
 	int height = 1080;
 	std::shared_ptr<Engine> engine = std::make_shared<Engine>(width, height, "SFML-Tetris", false);
 
+	// Initialize game play systems
 	std::shared_ptr<PhysicSystem> physicSystem = std::make_shared<PhysicSystem>();
 	engine->AddSystem(physicSystem, eThreadImportance::direct);
 
@@ -29,15 +25,18 @@ int EngineMain()
 	std::shared_ptr<MapSystem> mapSystem = std::make_shared<MapSystem>();
 	engine->AddSystem(mapSystem, eThreadImportance::direct);
 
+	// Initialize less important systems
 	std::shared_ptr<UISystem> uiSystem = std::make_shared<UISystem>();
-	engine->AddSystem(uiSystem, eThreadImportance::lazy);
+	engine->AddSystem(uiSystem, eThreadImportance::worker);
 
 	std::shared_ptr<AudioSystem> audioSystem = std::make_shared<AudioSystem>();
-	engine->AddSystem(audioSystem, eThreadImportance::lazy);
-
+	engine->AddSystem(audioSystem, eThreadImportance::worker);
+	
+	// Start the engine!
 	while (engine->IsRunning())
 	{
 		engine->Update();
 	}
+
 	return 0;
 }

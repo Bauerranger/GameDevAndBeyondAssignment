@@ -9,16 +9,19 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 	m_IsRunning = true;
 	m_Window = std::make_shared<Window>(width, height, text, fullscreen);
 	m_Time = std::make_unique<Time>();
-	m_RenderSystem = std::make_shared<RenderSystem>(); 
-	m_LazyThread = std::thread(&Engine::UpdateLazySystems, this);
+	m_RenderSystem = std::make_shared<RenderSystem>();
+	m_WorkerThread = std::thread(&Engine::UpdateWorkerSystems, this);
 	m_RenderThread = std::thread(&Engine::UpdateRenderSystems, this);
-	// TODO find problem when closing the program
 	AddSystem(m_RenderSystem, eThreadImportance::direct);
 	m_Window->SetWindowActive(false);
 }
 
 Engine::~Engine()
 {
+	if (m_IsRunning) 
+	{
+		JoinThreads();
+	}
 	m_IsRunning = false;
 }
 
@@ -27,7 +30,6 @@ void Engine::Update()
 	m_Time->Restart();
 
 	const float elapsedTime = GetElapsedTimeAsSeconds();
-
 	m_AccumulatedTime += elapsedTime;
 
 	while (m_AccumulatedTime >= m_dt)
@@ -36,9 +38,10 @@ void Engine::Update()
 		{
 			//Window has been closed
 			m_IsRunning = false;
+			m_AccumulatedTime -= m_dt;
 			return;
 		}
-		for (std::shared_ptr<ISystem> system : m_DirectSystems)
+		for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
 		{
 			system->Update(this, m_dt);
 		}
@@ -49,15 +52,15 @@ void Engine::Update()
 	}
 }
 
-void Engine::UpdateLazySystems()
+void Engine::UpdateWorkerSystems()
 {
-	std::cout << "Initializing lazy thread" << std::endl;
+	std::cout << "Initializing worker thread" << std::endl;
 	while (m_IsRunning)
 	{
 		while (m_AccumulatedTime >= m_dt)
 		{
 			//update all systems
-			for (std::shared_ptr<ISystem> system : m_LazySystems)
+			for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
 			{
 				system->Update(this, m_dt);
 			}
@@ -74,7 +77,7 @@ void Engine::UpdateRenderSystems()
 		while (m_AccumulatedTime >= m_dt)
 		{
 			//update all systems
-			for (std::shared_ptr<ISystem> system : m_RenderSystems)
+			for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
 			{
 				system->Update(this, m_dt);
 			}
@@ -120,7 +123,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 	}
 	m_Entities.push_back(entity);
 
-	for (std::shared_ptr<ISystem> system : m_DirectSystems)
+	for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -128,7 +131,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		}
 	}
 
-	for (std::shared_ptr<ISystem> system : m_LazySystems)
+	for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -136,7 +139,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		}
 	}
 
-	for (std::shared_ptr<ISystem> system : m_RenderSystems)
+	for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -154,17 +157,17 @@ void Engine::RemoveEntity(std::shared_ptr<Entity> entity)
 	}
 	m_Entities.erase(entityIterator);
 
-	for (std::shared_ptr<ISystem> system : m_DirectSystems)
+	for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
 	{
 		system->RemoveEntity(entity);
 	}
 
-	for (std::shared_ptr<ISystem> system : m_LazySystems)
+	for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
 	{
 		system->RemoveEntity(entity);
 	}
 
-	for (std::shared_ptr<ISystem> system : m_RenderSystems)
+	for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
 	{
 		system->RemoveEntity(entity);
 	}
@@ -181,12 +184,12 @@ void Engine::AddSystem(std::shared_ptr<ISystem> system, eThreadImportance import
 		}
 		m_DirectSystems.push_back(system);
 		break;
-	case eThreadImportance::lazy:
-		if (std::find(m_LazySystems.begin(), m_LazySystems.end(), system) != m_LazySystems.end())
+	case eThreadImportance::worker:
+		if (std::find(m_WorkerSystems.begin(), m_WorkerSystems.end(), system) != m_WorkerSystems.end())
 		{
 			return;
 		}
-		m_LazySystems.push_back(system);
+		m_WorkerSystems.push_back(system);
 		break;
 	case eThreadImportance::render:
 		if (std::find(m_RenderSystems.begin(), m_RenderSystems.end(), system) != m_RenderSystems.end())
@@ -199,7 +202,7 @@ void Engine::AddSystem(std::shared_ptr<ISystem> system, eThreadImportance import
 		break;
 	}
 
-	for (std::shared_ptr<Entity> entity : m_Entities)
+	for (const std::shared_ptr<Entity>& entity : m_Entities)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -215,8 +218,8 @@ void Engine::RemoveSystem(std::shared_ptr<ISystem> system)
 	std::vector<std::shared_ptr<ISystem>>::iterator systemIterator = std::find(m_DirectSystems.begin(), m_DirectSystems.end(), system);
 	if (systemIterator == m_DirectSystems.end())
 	{
-		std::vector<std::shared_ptr<ISystem>>::iterator systemIterator = std::find(m_LazySystems.begin(), m_LazySystems.end(), system);
-		if (systemIterator == m_LazySystems.end())
+		std::vector<std::shared_ptr<ISystem>>::iterator systemIterator = std::find(m_WorkerSystems.begin(), m_WorkerSystems.end(), system);
+		if (systemIterator == m_WorkerSystems.end())
 		{
 			std::vector<std::shared_ptr<ISystem>>::iterator systemIterator = std::find(m_RenderSystems.begin(), m_RenderSystems.end(), system);
 			if (systemIterator == m_RenderSystems.end())
@@ -226,7 +229,7 @@ void Engine::RemoveSystem(std::shared_ptr<ISystem> system)
 			m_RenderSystems.erase(systemIterator);
 			return;
 		}
-		m_LazySystems.erase(systemIterator);
+		m_WorkerSystems.erase(systemIterator);
 		return;
 	}
 	m_DirectSystems.erase(systemIterator);

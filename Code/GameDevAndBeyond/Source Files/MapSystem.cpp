@@ -21,6 +21,8 @@ MapSystem::MapSystem()
 
 MapSystem::~MapSystem()
 {
+	// TODO find out why this line stops window from closing
+	// delete(m_Engine);
 	m_Listener->RemoveCallback(m_PhysicsUpdateEventFunctor);
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
 }
@@ -148,17 +150,6 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 			}
 		}
 		UpdateMap();
-		for (int i = 0; i < 20; i++)
-		{
-			for (int j = 0; j < 10; j++)
-			{
-				std::cout << m_MapMatrix[i][j];
-				if (j == 9) {
-					std::cout << std::endl;
-				}
-			}
-		}
-		std::cout << std::endl;
 	}
 	if (!m_CollisionHasHappened)
 	{
@@ -168,11 +159,11 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 
 void MapSystem::UpdateMap()
 {
-	for (int i = 0; i < sizeof(m_MapMatrix) / sizeof(m_MapMatrix[0]); i++)
+	for (auto & rows : m_MapMatrix)
 	{
-		for (int j = 0; j < sizeof(m_MapMatrix[0]); j++)
+		for (auto & collumns : rows)
 		{
-			m_MapMatrix[i][j] = false;
+			collumns = false;
 		}
 	}
 	std::vector<std::shared_ptr<Entity>> copiedEntities = BlockSystem::Instance()->GetBrickEntities();;
@@ -227,7 +218,7 @@ void MapSystem::LoadUI(Engine* engine)
 	std::shared_ptr<TextComponent> iOText = iOEntity->AddComponent<TextComponent>();
 	std::shared_ptr<IOComponent> iOComp = iOEntity->AddComponent<IOComponent>();
 
-	iOText->SetFont("../bin/Hyperspace.otf");
+	iOText->SetFont("../bin/Jamma.ttf");
 	iOText->SetColor(255, 255, 255, 255);
 	iOText->SetPosition(10.0f, 10.0f);
 	iOText->SetSize(24);
@@ -238,7 +229,7 @@ void MapSystem::LoadUI(Engine* engine)
 	std::shared_ptr<TextComponent> scoreText = scoreEntity->AddComponent<TextComponent>();
 	std::shared_ptr<ScoreComponent> scoreComp = scoreEntity->AddComponent<ScoreComponent>();
 
-	scoreText->SetFont("../bin/Hyperspace.otf");
+	scoreText->SetFont("../bin/Jamma.ttf");
 	scoreText->SetColor(255, 255, 255, 255);
 	scoreText->SetPosition(10.0f, 10.0f);
 	scoreText->SetSize(24);

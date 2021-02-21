@@ -3,8 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 SpriteComponent::SpriteComponent()
-{
-}
+= default;
 
 SpriteComponent::~SpriteComponent()
 {
@@ -62,6 +61,36 @@ void SpriteComponent::SetVisible(bool visible)
 void SpriteComponent::GetVisible(bool& visible)
 {
 	visible = m_Visible;
+}
+
+void SpriteComponent::SetColor(const int blockKey)
+{
+	switch (blockKey)
+	{
+	case 0:
+		m_Sprite->setColor(sf::Color::Color(255, 255, 255, 255));
+		break;
+	case 1:
+		m_Sprite->setColor(sf::Color::Color(50, 124, 240, 255));
+		break;
+	case 2:
+		m_Sprite->setColor(sf::Color::Color(240, 84, 62, 255));
+		break;
+	case 3:
+		m_Sprite->setColor(sf::Color::Color(38, 223, 240, 255));
+		break;
+	case 4:
+		m_Sprite->setColor(sf::Color::Color(240, 165, 14, 255));
+		break;
+	case 5:
+		m_Sprite->setColor(sf::Color::Color(26, 240, 138, 255));
+		break;
+	case 6:
+		m_Sprite->setColor(sf::Color::Color(150, 150, 150, 255));
+		break;
+	default:
+		break;
+	}
 }
 
 const bool SpriteComponent::IsCollidingWith(std::shared_ptr<SpriteComponent> otherSprite) const
