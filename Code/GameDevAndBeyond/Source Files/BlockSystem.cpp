@@ -467,6 +467,21 @@ void BlockSystem::SpawnBlock()
 		{
 			if (m_BlockShapes[m_ShapeKey].BlockShape[i][e])
 			{
+				std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
+				for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+				{
+					std::shared_ptr<Entity> entity = *entityItr;
+					int matrixPosX = 0;
+					int matrixPosY = 0;
+					entity->GetComponent<BrickComponent>()->GetBrickMatrixPosition(matrixPosX, matrixPosY);
+					if (matrixPosX == e + 4 && matrixPosY == i) 
+					{
+						std::shared_ptr<LooseEvent> looseEvent = std::make_shared<LooseEvent>();
+						EventManager::GetInstance().PushEvent(looseEvent);
+						return;
+					}
+					++entityItr;
+				}
 				std::shared_ptr<Entity> brickEntity = std::make_shared<Entity>();
 				std::shared_ptr<BrickComponent> brickComponent = brickEntity->AddComponent<BrickComponent>();
 				brickComponent->SetBrickMatrixPosition(e + 4, i);
@@ -483,7 +498,7 @@ void BlockSystem::SpawnBlock()
 		}
 	}
 }
-
+// TODO: Sometimes blocks stay in position when the line gets deleted  find real problem
 void BlockSystem::ResetPosition()
 {
 	int windowSizeX = 0;
@@ -514,10 +529,6 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 	if (scoreEvent != nullptr)
 	{
 		std::cout << "Score ";
-		// TODO find out why there can only be one event
-		std::shared_ptr<ScoreEvent> scoreEvent = std::make_shared<ScoreEvent>();
-		scoreEvent->Score = 1;
-		EventManager::GetInstance().PushEvent(scoreEvent);
 	}
 	if (spawnEvent != nullptr)
 	{

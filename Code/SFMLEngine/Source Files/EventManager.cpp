@@ -42,7 +42,7 @@ void EventManager::Update()
 		m_Events.pop();
 
 		std::vector<std::shared_ptr<IEventHandler>> copiedListeners = m_Listeners;
-		for (const std::shared_ptr<IEventHandler>& listener : m_Listeners)
+		for (std::shared_ptr<IEventHandler> listener : m_Listeners)
 		{
 			if (listener->DoesEventMatch(event))
 			{

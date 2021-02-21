@@ -80,7 +80,6 @@ void PhysicSystem::OnCollision(std::shared_ptr<IEvent> event)
 			float waitTime = 0.5f;
 			m_TickWaitTime = waitTime;
 		}
-		// TODO
 		std::shared_ptr<SpawnEvent> spawnEvent = std::make_shared<SpawnEvent>();
 		EventManager::GetInstance().PushEvent(spawnEvent);
 	}
