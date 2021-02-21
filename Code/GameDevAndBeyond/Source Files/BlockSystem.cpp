@@ -498,7 +498,7 @@ void BlockSystem::SpawnBlock()
 		}
 	}
 }
-// TODO: Sometimes blocks stay in position when the line gets deleted  find real problem
+
 void BlockSystem::ResetPosition()
 {
 	int windowSizeX = 0;
@@ -524,7 +524,7 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 	if (looseEvent != nullptr)
 	{
 		std::cout << "End ";
-		//TODO: Make end
+		//TODO: Make end, stop physicupdates
 	}
 	if (scoreEvent != nullptr)
 	{
