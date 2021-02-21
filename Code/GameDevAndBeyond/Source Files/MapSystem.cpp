@@ -21,8 +21,7 @@ MapSystem::MapSystem()
 
 MapSystem::~MapSystem()
 {
-	// TODO find out why this line stops window from closing
-	// delete(m_Engine);
+	delete(m_Engine);
 	m_Listener->RemoveCallback(m_PhysicsUpdateEventFunctor);
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
 }
@@ -86,7 +85,15 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 			collisionHasHappened = true;
 		}
 	}
-	
+	// TODO make Loose event
+	/*
+				if (m_MapMatrix[matrixPosY][matrixPosX])
+				{
+					std::shared_ptr<LooseEvent> looseEvent = std::make_shared<LooseEvent>();
+					EventManager::GetInstance().PushEvent(looseEvent);
+					return;
+				}
+	*/
 	if (collisionHasHappened)
 	{
 		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
@@ -145,8 +152,6 @@ void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, floa
 					}
 					++entityItr;
 				}
-				// Score
-				// TODO make nice score
 			}
 		}
 		UpdateMap();
