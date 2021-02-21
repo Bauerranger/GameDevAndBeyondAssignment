@@ -15,14 +15,14 @@
 MapSystem::MapSystem()
 {
 	m_Listener = std::make_shared<EventHandler>();
-	m_PhysicsUpdateEventFunctor = std::bind(&MapSystem::OnPhysicsUpdate, this, std::placeholders::_1);
-	m_Listener->AddCallback(m_PhysicsUpdateEventFunctor);
+	m_EventFunctor = std::bind(&MapSystem::OnEvent, this, std::placeholders::_1);
+	m_Listener->AddCallback(m_EventFunctor);
 	EventManager::GetInstance().AddEventListener(m_Listener);
 }
 
 MapSystem::~MapSystem()
 {
-	m_Listener->RemoveCallback(m_PhysicsUpdateEventFunctor);
+	m_Listener->RemoveCallback(m_EventFunctor);
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
 }
 
@@ -188,7 +188,7 @@ void MapSystem::UpdateMap()
 	}
 }
 
-void MapSystem::OnPhysicsUpdate(std::shared_ptr<IEvent> event)
+void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 {
 	std::shared_ptr<PhysicUpdateEvent> physicUpdateEvent = std::dynamic_pointer_cast<PhysicUpdateEvent>(event);
 	if (physicUpdateEvent != nullptr)

@@ -44,13 +44,10 @@ private:
 	void Rotation(Engine* engine);
 
 	///////////////////////////////////////////////////// Events
-	std::shared_ptr<EventHandler> m_CollisionListener;
-	std::shared_ptr<EventHandler> m_LooseListener;
-	EventFunctor m_CollisionEventFunctor;
-	EventFunctor m_LooseEventFunctor;
+	std::shared_ptr<EventHandler> m_EventListener;
+	EventFunctor m_EventFunctor;
 
-	void OnCollision(std::shared_ptr<IEvent> event);
-	void OnLoose(std::shared_ptr<IEvent> event);
+	void OnEvent(std::shared_ptr<IEvent> event);
 
 	///////////////////////////////////////////////////// Engine
 	float m_TickTime = 0;

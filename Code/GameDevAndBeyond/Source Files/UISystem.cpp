@@ -10,15 +10,15 @@
 UISystem::UISystem()
 {
 	m_Listener = std::make_shared<EventHandler>();
-	m_ScoreEventFunctor = std::bind(&UISystem::OnScoreChange, this, std::placeholders::_1);
-	m_Listener->AddCallback(m_ScoreEventFunctor);
+	m_EventFunctor = std::bind(&UISystem::OnEvent, this, std::placeholders::_1);
+	m_Listener->AddCallback(m_EventFunctor);
 	EventManager::GetInstance().AddEventListener(m_Listener);
 }
 
 UISystem::~UISystem()
 {
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
-	m_Listener->RemoveCallback(m_ScoreEventFunctor);
+	m_Listener->RemoveCallback(m_EventFunctor);
 }
 
 bool UISystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
@@ -110,7 +110,7 @@ void UISystem::Update(Engine* engine, float dt)
 	}
 }
 
-void UISystem::OnScoreChange(std::shared_ptr<IEvent> event)
+void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 {
 	std::shared_ptr<ScoreEvent> scoreEvent = std::dynamic_pointer_cast<ScoreEvent>(event);
 	if (scoreEvent != nullptr)

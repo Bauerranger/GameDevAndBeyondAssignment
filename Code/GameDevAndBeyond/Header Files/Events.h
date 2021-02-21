@@ -1,7 +1,7 @@
 #pragma once
 #include <SFMLEngine/Header Files/EventManager.h>	
 
-class EGameStart : public IEvent
+class GameStartEvent : public IEvent
 {
 };
 
@@ -30,7 +30,7 @@ public:
 class EventHandler : public IEventHandler
 {
 public:
-	bool DoesEventMatch(std::shared_ptr<IEvent> event)
+	bool DoesEventMatch(std::shared_ptr<IEvent> event) override
 	{
 		if (std::dynamic_pointer_cast<ScoreEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<SpawnEvent>(event) != nullptr

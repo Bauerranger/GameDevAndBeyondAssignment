@@ -15,9 +15,9 @@ public:
 	
 private:
 	void inline UpdateSingleEntityPosition(std::shared_ptr<Entity> entity, float dt);
-	void OnCollision(std::shared_ptr<IEvent> event);
+	void OnEvent(std::shared_ptr<IEvent> event);
 	std::shared_ptr<EventHandler> m_Listener;
-	EventFunctor m_CollisionEventFunctor;
+	EventFunctor m_EventFunctor;
 	float m_TickTime = 0;
 	float m_TickWaitTime = 0;
 };

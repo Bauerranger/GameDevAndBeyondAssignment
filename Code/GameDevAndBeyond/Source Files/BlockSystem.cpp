@@ -18,14 +18,10 @@ BlockSystem::BlockSystem()
 	//setting up singleton
 	s_pInstance = this;
 	//setting up events
-	m_CollisionListener = std::make_shared<EventHandler>();
-	m_LooseListener = std::make_shared<EventHandler>();
-	m_CollisionEventFunctor = std::bind(&BlockSystem::OnCollision, this, std::placeholders::_1);
-	m_LooseEventFunctor = std::bind(&BlockSystem::OnLoose, this, std::placeholders::_1);
-	m_CollisionListener->AddCallback(m_CollisionEventFunctor);
-	m_LooseListener->AddCallback(m_LooseEventFunctor);
-	EventManager::GetInstance().AddEventListener(m_CollisionListener);
-	EventManager::GetInstance().AddEventListener(m_LooseListener);
+	m_EventListener = std::make_shared<EventHandler>();
+	m_EventFunctor = std::bind(&BlockSystem::OnEvent, this, std::placeholders::_1);
+	m_EventListener->AddCallback(m_EventFunctor);
+	EventManager::GetInstance().AddEventListener(m_EventListener);
 	//setting up different shapes for the blocks
 	BlockShape longBlock =	{	1,1,1,1,
 								0,0,0,0 };
@@ -57,10 +53,8 @@ BlockSystem::~BlockSystem()
 		s_pInstance = nullptr;
 	}
 	//End events
-	EventManager::GetInstance().RemoveEventListener(m_CollisionListener);
-	EventManager::GetInstance().RemoveEventListener(m_LooseListener);
-	m_CollisionListener->RemoveCallback(m_CollisionEventFunctor);
-	m_LooseListener->RemoveCallback(m_LooseEventFunctor);
+	EventManager::GetInstance().RemoveEventListener(m_EventListener);
+	m_EventListener->RemoveCallback(m_EventFunctor);
 }
 
 void BlockSystem::Init(Engine * engine)
@@ -519,7 +513,7 @@ void BlockSystem::ResetPosition()
 	}
 }
 
-void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
+void BlockSystem::OnEvent(std::shared_ptr<IEvent> event)
 {
 	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
 	std::shared_ptr<SpawnEvent> spawnEvent = std::dynamic_pointer_cast<SpawnEvent>(event);
@@ -527,6 +521,7 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 	if (looseEvent != nullptr)
 	{
 		std::cout << "End ";
+		m_IsEnd = true;
 		//TODO: Make end, stop physicupdates
 	}
 	if (scoreEvent != nullptr)
@@ -537,13 +532,5 @@ void BlockSystem::OnCollision(std::shared_ptr<IEvent> event)
 	{
 		std::cout << "Spawn ";
 		SpawnBlock();
-	}
-}
-void BlockSystem::OnLoose(std::shared_ptr<IEvent> event)
-{
-	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
-	if(looseEvent)
-	{
-		m_IsEnd = true;
 	}
 }

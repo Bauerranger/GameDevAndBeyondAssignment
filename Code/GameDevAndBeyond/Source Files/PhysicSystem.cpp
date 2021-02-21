@@ -8,15 +8,15 @@
 PhysicSystem::PhysicSystem()
 {
 	m_Listener = std::make_shared<EventHandler>();
-	m_CollisionEventFunctor = std::bind(&PhysicSystem::OnCollision, this, std::placeholders::_1);
-	m_Listener->AddCallback(m_CollisionEventFunctor);
+	m_EventFunctor = std::bind(&PhysicSystem::OnEvent, this, std::placeholders::_1);
+	m_Listener->AddCallback(m_EventFunctor);
 	EventManager::GetInstance().AddEventListener(m_Listener);
 }
 
 PhysicSystem::~PhysicSystem()
 {
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
-	m_Listener->RemoveCallback(m_CollisionEventFunctor);
+	m_Listener->RemoveCallback(m_EventFunctor);
 }
 
 bool PhysicSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
@@ -65,7 +65,7 @@ inline void PhysicSystem::UpdateSingleEntityPosition(std::shared_ptr<Entity> ent
 	m_TickWaitTime = waitTime;
 }
 
-void PhysicSystem::OnCollision(std::shared_ptr<IEvent> event)
+void PhysicSystem::OnEvent(std::shared_ptr<IEvent> event)
 {
 	std::shared_ptr<CollisionEvent> collisionEvent = std::dynamic_pointer_cast<CollisionEvent>(event);
 	if (collisionEvent != nullptr)

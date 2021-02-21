@@ -19,9 +19,9 @@ private:
 	void LoadUI(Engine* engine);
 	void UpdateSingleEntityPosition(std::shared_ptr<Entity> entity, float dt);
 	void UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, float dt);
-	void OnPhysicsUpdate(std::shared_ptr<IEvent> event);
+	void OnEvent(std::shared_ptr<IEvent> event);
 	std::shared_ptr<EventHandler> m_Listener;
-	EventFunctor m_PhysicsUpdateEventFunctor;
+	EventFunctor m_EventFunctor;
 	float m_DeltaTime;
 	std::atomic_bool m_MapMatrix[20][10] = { 0 };
 	std::atomic_bool m_CollisionHasHappened = false;
