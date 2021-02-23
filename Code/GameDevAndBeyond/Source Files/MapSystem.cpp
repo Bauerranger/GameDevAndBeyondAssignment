@@ -42,7 +42,7 @@ bool MapSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void MapSystem::Update(Engine* engine, float dt)
 {
-	if (!Engine::Instance()->IsRunning())
+	if (!Engine::Instance || !Engine::Instance()->IsRunning())
 	{
 		return;
 	}
@@ -70,6 +70,10 @@ void MapSystem::UpdateSingleEntityPosition(std::shared_ptr<Entity> entity, float
 
 void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, float dt)
 {
+	if (!Engine::Instance)
+	{
+		return;
+	}
 	int mapSizeY = sizeof(m_MapMatrix) / sizeof(m_MapMatrix[0]);
 	int mapSizeX = sizeof(m_MapMatrix[0]);
 	bool collisionHasHappened = false;
@@ -202,6 +206,10 @@ void MapSystem::UpdateMap()
 
 void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 {
+	if (!Engine::Instance)
+	{
+		return;
+	}
 	std::shared_ptr<GameStartEvent> startEvent = std::dynamic_pointer_cast<GameStartEvent>(event);
 	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
 
@@ -248,6 +256,10 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 
 void MapSystem::LoadStartUI()
 {
+	if (!Engine::Instance)
+	{
+		return;
+	}
 	std::shared_ptr<Entity> startGameUI = std::make_shared<Entity>();
 	std::shared_ptr<TextComponent> startGameText = startGameUI->AddComponent<TextComponent>();
 
@@ -264,6 +276,21 @@ void MapSystem::LoadStartUI()
 
 void MapSystem::LoadGameUI()
 {
+	if (!Engine::Instance) 
+	{
+		return;
+	}
+	// Load Background Image
+	std::shared_ptr<Entity> bgEntity = std::make_shared<Entity>();
+	std::shared_ptr<SpriteComponent> bgSprite = bgEntity->AddComponent<SpriteComponent>();
+	bgSprite->CreateSprite("../bin/bg.png");
+	int windowSizeX = 0;
+	int windowSizeY = 0;
+	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+	bgSprite->SetPosition((windowSizeX / 3) + 4 * 45 + 23, (windowSizeY / 2) - 57);
+	Engine::Instance()->AddEntity(bgEntity);
+
+	// Load High Score Text
 	std::shared_ptr<Entity> iOEntity = std::make_shared<Entity>();
 	std::shared_ptr<TextComponent> iOText = iOEntity->AddComponent<TextComponent>();
 	std::shared_ptr<IOComponent> iOComp = iOEntity->AddComponent<IOComponent>();
@@ -275,6 +302,7 @@ void MapSystem::LoadGameUI()
 
 	Engine::Instance()->AddEntity(iOEntity);
 
+	// Load Score Text
 	std::shared_ptr<Entity> scoreEntity = std::make_shared<Entity>();
 	std::shared_ptr<TextComponent> scoreText = scoreEntity->AddComponent<TextComponent>();
 	std::shared_ptr<ScoreComponent> scoreComp = scoreEntity->AddComponent<ScoreComponent>();

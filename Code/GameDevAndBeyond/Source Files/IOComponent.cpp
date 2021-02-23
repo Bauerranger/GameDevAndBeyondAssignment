@@ -6,7 +6,8 @@
 
 IOComponent::IOComponent()
 {
-	LoadScoreFromDrive();
+	// TODO: Rework score system
+	//LoadScoreFromDrive();
 }
 
 IOComponent::~IOComponent()
@@ -31,7 +32,7 @@ void IOComponent::SaveScoreToDrive()
 	output_file.close();
 }
 
-void IOComponent::GetScore(std::string& name, int & score)
+void IOComponent::GetScore(std::string& name, int& score)
 {
 	if (m_HighScoreList.size() > 1)
 	{

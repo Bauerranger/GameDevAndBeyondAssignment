@@ -3,6 +3,7 @@
 #include <vector>
 #include <type_traits>
 #include <memory>
+#include <iostream>
 
 #include "IComponent.h"
 #include "GameDevAndBeyond/Header Files/AudioComponent.h"
@@ -65,10 +66,15 @@ public:
 	template<typename T>
 	std::shared_ptr<T> GetComponent()
 	{
+		if (m_Components.size() == 0) 
+		{
+			std::cout << "m_Components is empty";
+			return nullptr;
+		}
 		//check if T derives from IComponent
 		static_assert(std::is_base_of<IComponent, T>::value, "T must be derived from IComponent");
 		//Go through all Components and return if the cast to the derived class is true
-		for (std::shared_ptr<IComponent> component : m_Components)
+		for (const std::shared_ptr<IComponent>& component : m_Components)
 		{
 			if (std::shared_ptr<T> cast = std::dynamic_pointer_cast<T>(component))
 			{

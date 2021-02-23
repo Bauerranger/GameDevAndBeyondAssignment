@@ -72,7 +72,8 @@ void Engine::UpdateWorkerSystems()
 			//update all systems
 			for (std::shared_ptr<ISystem> system : m_WorkerSystems)
 			{
-				system->Update(this, m_dt);
+				if (m_IsRunning)
+					system->Update(this, m_dt);
 			}
 			if (!m_IsRunning)
 			{
@@ -93,7 +94,8 @@ void Engine::UpdateRenderSystems()
 			//update all systems
 			for (std::shared_ptr<ISystem> system : m_RenderSystems)
 			{
-				system->Update(this, m_dt);
+				if (m_IsRunning)
+					system->Update(this, m_dt);
 			}
 			if (!m_IsRunning)
 			{

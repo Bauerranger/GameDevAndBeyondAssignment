@@ -44,16 +44,16 @@ void UISystem::Update(Engine* engine, float dt)
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
-		std::shared_ptr<Entity> entity = *entityItr;
-		std::shared_ptr<TextComponent> textComp = entity->GetComponent<TextComponent>();
-		std::shared_ptr<ScoreComponent> scoreComp = entity->GetComponent<ScoreComponent>();
-		std::shared_ptr<IOComponent> iOComp = entity->GetComponent<IOComponent>();
 		if (!Engine::Instance()->IsRunning())
 		{
 			return;
 		}
 		eGameState state;
 		Engine::Instance()->GetGameState(state);
+		std::shared_ptr<Entity> entity = *entityItr;
+		std::shared_ptr<TextComponent> textComp = entity->GetComponent<TextComponent>();
+		std::shared_ptr<ScoreComponent> scoreComp = entity->GetComponent<ScoreComponent>();
+		std::shared_ptr<IOComponent> iOComp = entity->GetComponent<IOComponent>();
 
 		if (scoreComp != nullptr)
 		{
@@ -120,7 +120,7 @@ void UISystem::Update(Engine* engine, float dt)
 					engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
 					textComp->SetPosition(windowSizeX / 5, windowSizeY / 2);
 					textComp->SetSize(48);
-					textComp->SetText("PRESS ANY KEY TO START GAME");
+					textComp->SetText("PRESS SPACE TO START GAME");
 				}
 				else
 				{

@@ -30,7 +30,7 @@ bool PhysicSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void PhysicSystem::Update(Engine * engine, float dt)
 {
-	if(!Engine::Instance()->IsRunning())
+	if(!Engine::Instance && !Engine::Instance()->IsRunning())
 	{
 		return;
 	}
