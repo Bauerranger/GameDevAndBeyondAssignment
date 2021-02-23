@@ -467,7 +467,9 @@ void BlockSystem::SpawnBlock()
 	{
 		return;
 	}
-	if (m_IsEnd)
+	eGameState state;
+	Engine::Instance()->GetGameState(state);
+	if (state == eGameState::end)
 	{
 		return;
 	}
@@ -548,7 +550,6 @@ void BlockSystem::OnEvent(std::shared_ptr<IEvent> event)
 	if (looseEvent != nullptr)
 	{
 		std::cout << "End ";
-		m_IsEnd = true;
 		//TODO: Make end, stop physicupdates
 	}
 	if (scoreEvent != nullptr)

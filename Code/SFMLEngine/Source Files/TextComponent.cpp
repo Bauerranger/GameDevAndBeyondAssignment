@@ -1,8 +1,9 @@
 #include "../Header Files/TextComponent.h"
 #include <SFML/Graphics.hpp>
 
-TextComponent::TextComponent()
+TextComponent::TextComponent(std::string text)
 {
+	m_Text->setString(text);
 }
 
 TextComponent::~TextComponent()

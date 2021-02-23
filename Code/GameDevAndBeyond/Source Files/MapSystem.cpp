@@ -260,18 +260,40 @@ void MapSystem::LoadStartUI()
 	{
 		return;
 	}
-	std::shared_ptr<Entity> startGameUI = std::make_shared<Entity>();
-	std::shared_ptr<TextComponent> startGameText = startGameUI->AddComponent<TextComponent>();
 
-	startGameText->SetFont("../bin/Jamma.ttf");
-	startGameText->SetColor(255, 255, 255, 255);
+	{
+		// Start Text
+		std::shared_ptr<Entity> startGameUI = std::make_shared<Entity>();
+		std::shared_ptr<TextComponent> startGameText = startGameUI->AddComponent<TextComponent>();
+
+		startGameText->SetFont("../bin/Jamma.ttf");
+		startGameText->SetColor(255, 255, 255, 255);
+		startGameText->SetText("PRESS SPACE TO START GAME");
+		int windowSizeX = 0;
+		int windowSizeY = 0;
+		Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+		startGameText->SetPosition(windowSizeX / 5, windowSizeY / 2);
+		startGameText->SetSize(60);
+
+		Engine::Instance()->AddEntity(startGameUI);
+	}
+
+	// Attribution text
+	{
+	std::shared_ptr<Entity> attributionUI = std::make_shared<Entity>();
+	std::shared_ptr<TextComponent> attributionText = attributionUI->AddComponent<TextComponent>();
+
+	attributionText->SetFont("../bin/Jamma.ttf");
+	attributionText->SetColor(255, 255, 255, 255);
+	attributionText->SetText("Bogozi, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons");
 	int windowSizeX = 0;
 	int windowSizeY = 0;
 	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-	startGameText->SetPosition(windowSizeX / 2, windowSizeY / 2);
-	startGameText->SetSize(60);
+	attributionText->SetPosition(windowSizeX / 5, windowSizeY - 40);
+	attributionText->SetSize(18);
 
-	Engine::Instance()->AddEntity(startGameUI);
+	Engine::Instance()->AddEntity(attributionUI);
+	}
 }
 
 void MapSystem::LoadGameUI()

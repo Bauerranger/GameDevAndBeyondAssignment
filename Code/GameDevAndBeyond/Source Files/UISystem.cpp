@@ -44,7 +44,7 @@ void UISystem::Update(Engine* engine, float dt)
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
-		if (!Engine::Instance()->IsRunning())
+		if (!Engine::Instance() && !Engine::Instance()->IsRunning())
 		{
 			return;
 		}
@@ -69,64 +69,48 @@ void UISystem::Update(Engine* engine, float dt)
 				textComp->SetText("Score: " + std::to_string(m_Score));
 			}
 		}
-		else
-			if (iOComp != nullptr)
-			{
-				if (state == eGameState::end)
-				{
-					int windowSizeX = 0;
-					int windowSizeY = 0;
-					engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-					textComp->SetPosition(windowSizeX / 5, windowSizeY / 2);
-					textComp->SetSize(48);
-					int highscore = 0;
-					std::string highscoreChampion;
-					iOComp->GetScore(highscoreChampion, highscore);
-					char input = A;
-					InputHelper::GetInput(input);
-					if (isalpha(input))
-					{
-						m_Name = m_Name + input;
-					}
-					if (highscore >= m_Score)
-					{
-						textComp->SetText("Current highscore: " + std::to_string(highscore) + " by: " + highscoreChampion);
-						//Delete me
 
-						textComp->SetText("New highscore: " + std::to_string(m_Score) + " Enter your name: " + m_Name);
-						if (engine->IsKeyPressed(Key::Enter))
-						{
-							iOComp->SetScore(m_Name, m_Score);
-							iOComp->SaveScoreToDrive();
-						}
-					}
-					if (highscore < m_Score)
-					{
-						textComp->SetText("New highscore: " + std::to_string(m_Score) + " Enter your name: " + m_Name);
-						if (engine->IsKeyPressed(Key::Enter))
-						{
-							iOComp->SetScore(m_Name, m_Score);
-							iOComp->SaveScoreToDrive();
-						}
-					}
-				}
-			}
-			else
+		if (iOComp != nullptr)
+		{
+			if (state == eGameState::end)
 			{
-				if (state == eGameState::start)
+				int windowSizeX = 0;
+				int windowSizeY = 0;
+				engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+				textComp->SetPosition(windowSizeX / 5, windowSizeY / 2);
+				textComp->SetSize(48);
+				int highscore = 0;
+				std::string highscoreChampion;
+				iOComp->GetScore(highscoreChampion, highscore);
+				char input = A;
+				InputHelper::GetInput(input);
+				if (isalpha(input))
 				{
-					int windowSizeX = 0;
-					int windowSizeY = 0;
-					engine->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-					textComp->SetPosition(windowSizeX / 5, windowSizeY / 2);
-					textComp->SetSize(48);
-					textComp->SetText("PRESS SPACE TO START GAME");
+					m_Name = m_Name + input;
 				}
-				else
+				if (highscore >= m_Score)
 				{
-					textComp->SetText("");
+					textComp->SetText("Current highscore: " + std::to_string(highscore) + " by: " + highscoreChampion);
+					//Delete me
+					/*
+					textComp->SetText("New highscore: " + std::to_string(m_Score) + " Enter your name: " + m_Name);
+					if (engine->IsKeyPressed(Key::Enter))
+					{
+						iOComp->SetScore(m_Name, m_Score);
+						iOComp->SaveScoreToDrive();
+					}*/
+				}
+				if (highscore < m_Score)
+				{
+					textComp->SetText("New highscore: " + std::to_string(m_Score) + " Enter your name: " + m_Name);
+					if (engine->IsKeyPressed(Key::Enter))
+					{
+						iOComp->SetScore(m_Name, m_Score);
+						iOComp->SaveScoreToDrive();
+					}
 				}
 			}
+		}
 		++entityItr;
 	}
 }
@@ -137,5 +121,6 @@ void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 	if (scoreEvent != nullptr)
 	{
 		m_Score += scoreEvent->Score;
+		// TODO make stones speed up at certain points in the game
 	}
 }

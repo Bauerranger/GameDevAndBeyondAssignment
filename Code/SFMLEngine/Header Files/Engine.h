@@ -36,7 +36,6 @@ public:
 	///////////////////////////////////////////////////// Singleton
 	static Engine* Instance();
 public:
-	// TODO: Make end engine event (or if is running in updates) to stop exception, delete is running for updates
 	///////////////////////////////////////////////////// Window handling
 	const bool IsRunning() const { return m_IsRunning; }
 	void Update();

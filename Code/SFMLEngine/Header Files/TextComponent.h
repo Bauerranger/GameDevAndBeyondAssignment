@@ -12,7 +12,8 @@ namespace sf
 class TextComponent : public IComponent
 {
 public:
-	TextComponent();
+	TextComponent() = default;
+	TextComponent(std::string text);
 	~TextComponent();
 
 public:
