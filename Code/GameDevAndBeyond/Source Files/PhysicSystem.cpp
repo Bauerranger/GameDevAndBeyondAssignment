@@ -87,11 +87,16 @@ void PhysicSystem::OnEvent(std::shared_ptr<IEvent> event)
 			entity->RemoveComponent<PhysicComponent>();
 			++entityItr;
 
-			float waitTime = 0.5f;
-			m_TickWaitTime = waitTime;
+			m_TickWaitTime = m_CurrentWaitTime;
 		}
 		std::shared_ptr<SpawnEvent> spawnEvent = std::make_shared<SpawnEvent>();
 		EventManager::GetInstance().PushEvent(spawnEvent);
+	}
+	std::shared_ptr<LevelUpEvent> levelUpEvent = std::dynamic_pointer_cast<LevelUpEvent>(event);
+	if (levelUpEvent != nullptr)
+	{
+		m_CurrentWaitTime -= 0.03;
+		m_TickWaitTime = m_CurrentWaitTime;
 	}
 }
 

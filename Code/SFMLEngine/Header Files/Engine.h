@@ -37,7 +37,7 @@ public:
 	static Engine* Instance();
 public:
 	///////////////////////////////////////////////////// Window handling
-	const bool IsRunning() const { return m_IsRunning; }
+	const bool IsRunning() const { return m_IsRunning; };
 	void Update();
 
 	void UpdateWorkerSystems();

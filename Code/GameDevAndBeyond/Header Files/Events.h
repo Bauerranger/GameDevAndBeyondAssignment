@@ -17,6 +17,10 @@ class CollisionEvent : public IEvent
 {
 };
 
+class LevelUpEvent : public IEvent
+{
+};
+
 class LooseEvent : public IEvent
 {
 };
@@ -33,11 +37,12 @@ public:
 	bool DoesEventMatch(std::shared_ptr<IEvent> event) override
 	{
 		if (std::dynamic_pointer_cast<GameStartEvent>(event) != nullptr
-			|| std::dynamic_pointer_cast<ScoreEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<SpawnEvent>(event) != nullptr
-			|| std::dynamic_pointer_cast<CollisionEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<PhysicUpdateEvent>(event) != nullptr
-			|| std::dynamic_pointer_cast<LooseEvent>(event) != nullptr)
+			|| std::dynamic_pointer_cast<CollisionEvent>(event) != nullptr
+			|| std::dynamic_pointer_cast<LevelUpEvent>(event) != nullptr
+			|| std::dynamic_pointer_cast<LooseEvent>(event) != nullptr
+			|| std::dynamic_pointer_cast<ScoreEvent>(event) != nullptr)
 		{
 			return true;
 		}

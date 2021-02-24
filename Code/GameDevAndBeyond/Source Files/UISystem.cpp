@@ -122,5 +122,10 @@ void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 	{
 		m_Score += scoreEvent->Score;
 		// TODO make stones speed up at certain points in the game
+		if (m_Level > 9 && m_Score <= pow(m_Level,2) + 32) 
+		{
+			std::shared_ptr<LevelUpEvent> levelUpEvent = std::make_shared<LevelUpEvent>();
+			EventManager::GetInstance().PushEvent(levelUpEvent);
+		}
 	}
 }

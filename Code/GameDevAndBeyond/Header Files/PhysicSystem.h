@@ -20,4 +20,5 @@ private:
 	EventFunctor m_EventFunctor;
 	float m_TickTime = 0;
 	float m_TickWaitTime = 0;
+	float m_CurrentWaitTime = 0.5f;
 };

@@ -1,5 +1,6 @@
 #include "../Header Files/TextComponent.h"
 #include <SFML/Graphics.hpp>
+#include <SFMLEngine/Header Files/Engine.h>
 
 TextComponent::TextComponent(std::string text)
 {
@@ -39,4 +40,11 @@ void TextComponent::SetColor(const unsigned char red, const unsigned char green,
 void TextComponent::SetPosition(const float X, const float Y)
 {
 	m_Text->setPosition(X, Y);
+}
+
+void TextComponent::CenterText()
+{
+	sf::FloatRect textRect = m_Text->getLocalBounds();
+	m_Text->setOrigin(textRect.left + textRect.width / 2.0f,
+		textRect.top + textRect.height / 2.0f);
 }

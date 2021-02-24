@@ -22,4 +22,5 @@ private:
 	int m_Health = 0;
 
 	std::string m_Name;
+	int m_Level = 0;
 };

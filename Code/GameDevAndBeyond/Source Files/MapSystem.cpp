@@ -269,11 +269,13 @@ void MapSystem::LoadStartUI()
 		startGameText->SetFont("../bin/Jamma.ttf");
 		startGameText->SetColor(255, 255, 255, 255);
 		startGameText->SetText("PRESS SPACE TO START GAME");
+		startGameText->CenterText();
 		int windowSizeX = 0;
 		int windowSizeY = 0;
 		Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-		startGameText->SetPosition(windowSizeX / 5, windowSizeY / 2);
-		startGameText->SetSize(60);
+		// For some reason the center does not center
+		startGameText->SetPosition(windowSizeX / 2 -50, windowSizeY / 2);
+		startGameText->SetSize(32);
 
 		Engine::Instance()->AddEntity(startGameUI);
 	}
@@ -285,12 +287,14 @@ void MapSystem::LoadStartUI()
 
 	attributionText->SetFont("../bin/Jamma.ttf");
 	attributionText->SetColor(255, 255, 255, 255);
-	attributionText->SetText("Bogozi, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons");
+	attributionText->SetText("Tetris Song: Bogozi, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons");
+	attributionText->CenterText();
 	int windowSizeX = 0;
 	int windowSizeY = 0;
 	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-	attributionText->SetPosition(windowSizeX / 5, windowSizeY - 40);
-	attributionText->SetSize(18);
+	// For some reason the center does not center
+	attributionText->SetPosition(windowSizeX, windowSizeY - 40);
+	attributionText->SetSize(12);
 
 	Engine::Instance()->AddEntity(attributionUI);
 	}
