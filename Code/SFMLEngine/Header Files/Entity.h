@@ -66,9 +66,8 @@ public:
 	template<typename T>
 	std::shared_ptr<T> GetComponent()
 	{
-		if (m_Components.size() == 0) 
+		if (m_Components.empty()) 
 		{
-			std::cout << "m_Components is empty";
 			return nullptr;
 		}
 		//check if T derives from IComponent

@@ -30,6 +30,8 @@ bool AudioSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void AudioSystem::Update(Engine* engine, float dt)
 {
+	// TODO find out why this sometimes triggers an access violation
+	// Lock entities?
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{

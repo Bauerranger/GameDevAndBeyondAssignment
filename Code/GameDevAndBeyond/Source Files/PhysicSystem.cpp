@@ -41,7 +41,6 @@ void PhysicSystem::Update(Engine * engine, float dt)
 		return;
 	}
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
-	
 	m_TickTime += dt;
 	if (m_TickTime > m_TickWaitTime) {
 		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)

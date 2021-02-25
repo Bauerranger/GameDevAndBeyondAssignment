@@ -64,7 +64,6 @@ void Engine::Update()
 
 void Engine::UpdateWorkerSystems()
 {
-	std::cout << "Initializing worker thread" << std::endl;
 	while (m_IsRunning)
 	{
 		while (m_AccumulatedTime >= m_dt)
@@ -85,7 +84,6 @@ void Engine::UpdateWorkerSystems()
 
 void Engine::UpdateRenderSystems()
 {
-	std::cout << "Initializing render thread" << std::endl;
 	m_Window->SetWindowActive(true);
 	while (m_IsRunning)
 	{
@@ -129,6 +127,14 @@ bool Engine::IsKeyPressed(Key key)
 void Engine::GetCursorPosition(float& X, float& Y) const
 {
 	InputHelper::GetCursorPosition(this, X, Y);
+}
+
+void Engine::SetGameState(eGameState state)
+{
+	m_GameState = state;
+
+	std::shared_ptr<GameStateChangeEvent> changeEvent = std::make_shared<GameStateChangeEvent>();
+	EventManager::GetInstance().PushEvent(changeEvent);
 }
 
 const float Engine::GetElapsedTimeAsSeconds()

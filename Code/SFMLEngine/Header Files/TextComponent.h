@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include "IComponent.h"
+#include <SFML/Graphics.hpp>
+#include <SFMLEngine/Header Files/Engine.h>
 
 namespace sf
 {
@@ -31,7 +33,13 @@ public:
 	void SetPosition(const float X, const float Y);
 	// Center text
 	void CenterText();
+	// Set in which game state the text is visible
+	void SetVisibleState(eGameState state) { m_VisibleState = state; }
+	// Sets visibility according to game state
+	void SetVisibilityOnStateChange();
 private:
 	sf::Text* m_Text = nullptr;
 	sf::Font* m_Font = nullptr;
+	eGameState m_VisibleState = eGameState::start;
+	sf::Color m_Color;
 };

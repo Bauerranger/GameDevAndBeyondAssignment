@@ -1,6 +1,4 @@
 #include "../Header Files/TextComponent.h"
-#include <SFML/Graphics.hpp>
-#include <SFMLEngine/Header Files/Engine.h>
 
 TextComponent::TextComponent(std::string text)
 {
@@ -34,6 +32,7 @@ void TextComponent::SetSize(const int size)
 void TextComponent::SetColor(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
 {
 	sf::Color color(red, green, blue, alpha);
+	m_Color = color;
 	m_Text->setFillColor(color);
 }
 
@@ -45,6 +44,27 @@ void TextComponent::SetPosition(const float X, const float Y)
 void TextComponent::CenterText()
 {
 	sf::FloatRect textRect = m_Text->getLocalBounds();
-	m_Text->setOrigin(textRect.left + textRect.width / 2.0f,
-		textRect.top + textRect.height / 2.0f);
+	m_Text->setOrigin(	textRect.left + textRect.width / 2.0f,
+						textRect.top + textRect.height / 2.0f);
+}
+
+void TextComponent::SetVisibilityOnStateChange()
+{
+	if (!Engine::Instance) 
+	{
+		return;
+	}
+	eGameState state;
+	Engine::Instance()->GetGameState(state);
+	if (state == m_VisibleState) 
+	{
+		sf::Color color(255, 255, 255, 255);
+		m_Text->setFillColor(color);
+		// TODO m_Color is changed somewhere find out why
+		//m_Text->setFillColor(m_Color);
+	}
+	else 
+	{
+		SetColor(0, 0, 0, 0);
+	}
 }

@@ -33,11 +33,13 @@ public:
 	Engine(int width, int height, std::string text, bool fullscreen);
 	~Engine();
 
+	// TODO: Make destructor wait for all updates to end
+	
 	///////////////////////////////////////////////////// Singleton
 	static Engine* Instance();
 public:
 	///////////////////////////////////////////////////// Window handling
-	const bool IsRunning() const { return m_IsRunning; };
+	const bool IsRunning() { return this == nullptr ? false : m_IsRunning; };
 	void Update();
 
 	void UpdateWorkerSystems();
@@ -52,8 +54,8 @@ public:
 	void GetCursorPosition(float& X, float& Y) const;
 
 	///////////////////////////////////////////////////// Game State
-	void GetGameState(eGameState& state) { state = m_GameState; };
-	void SetGameState(eGameState state) { m_GameState = state; };
+	void GetGameState(eGameState& state) { if(this != nullptr) state = m_GameState; };
+	void SetGameState(eGameState state);
 
 	///////////////////////////////////////////////////// Time handling
 	const float GetElapsedTimeAsSeconds();

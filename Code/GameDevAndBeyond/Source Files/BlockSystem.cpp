@@ -544,21 +544,17 @@ void BlockSystem::OnEvent(std::shared_ptr<IEvent> event)
 	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
 	if (startEvent != nullptr)
 	{
-		std::cout << "Start ";
 		SpawnBlock();
 	}
 	if (looseEvent != nullptr)
 	{
-		std::cout << "End ";
 		//TODO: Make end, stop physicupdates
 	}
 	if (scoreEvent != nullptr)
 	{
-		std::cout << "Score ";
 	}
 	if (spawnEvent != nullptr)
 	{
-		std::cout << "Spawn ";
 		SpawnBlock();
 	}
 }

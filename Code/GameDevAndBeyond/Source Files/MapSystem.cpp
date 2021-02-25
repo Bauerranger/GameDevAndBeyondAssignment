@@ -28,7 +28,6 @@ MapSystem::~MapSystem()
 
 void MapSystem::Init(Engine* engine)
 {
-	LoadStartUI();
 }
 
 bool MapSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
@@ -189,7 +188,7 @@ void MapSystem::UpdateMap()
 			collumns = false;
 		}
 	}
-	std::vector<std::shared_ptr<Entity>> copiedEntities = BlockSystem::Instance()->GetBrickEntities();;
+	std::vector<std::shared_ptr<Entity>> copiedEntities = BlockSystem::Instance()->GetBrickEntities();
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
 		std::shared_ptr<Entity> entity = *entityItr;
@@ -211,20 +210,25 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 		return;
 	}
 	std::shared_ptr<GameStartEvent> startEvent = std::dynamic_pointer_cast<GameStartEvent>(event);
+	std::shared_ptr<PhysicUpdateEvent> physicUpdateEvent = std::dynamic_pointer_cast<PhysicUpdateEvent>(event);
+	std::shared_ptr<GameStateChangeEvent> changeEvent = std::dynamic_pointer_cast<GameStateChangeEvent>(event);
 	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
 
-	if (looseEvent != nullptr)
-	{
-		Engine::Instance()->SetGameState(eGameState::end);
-	}
 
 	if (startEvent != nullptr)
 	{
-		LoadGameUI();
+		// Load Background Image
+		std::shared_ptr<Entity> bgEntity = std::make_shared<Entity>();
+		std::shared_ptr<SpriteComponent> bgSprite = bgEntity->AddComponent<SpriteComponent>();
+		bgSprite->CreateSprite("../bin/bg.png");
+		int windowSizeX = 0;
+		int windowSizeY = 0;
+		Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+		bgSprite->SetPosition((windowSizeX / 3) + 4 * 45 + 23, (windowSizeY / 2) - 57);
+		Engine::Instance()->AddEntity(bgEntity);
+
 		Engine::Instance()->SetGameState(eGameState::game);
 	}
-
-	std::shared_ptr<PhysicUpdateEvent> physicUpdateEvent = std::dynamic_pointer_cast<PhysicUpdateEvent>(event);
 
 	if (physicUpdateEvent != nullptr)
 	{
@@ -252,92 +256,34 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 			}
 		}
 	}
-}
 
-void MapSystem::LoadStartUI()
-{
-	if (!Engine::Instance)
+	if (changeEvent != nullptr)
 	{
-		return;
+		if (!Engine::Instance && !Engine::Instance()->IsRunning())
+		{
+			return;
+		}
+		eGameState state;
+		Engine::Instance()->GetGameState(state);
+		if (state == eGameState::end)
+		{
+			std::vector<std::shared_ptr<Entity>> copiedEntities = BlockSystem::Instance()->GetBrickEntities();
+			for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
+			{
+				std::shared_ptr<Entity> entity = *entityItr;
+				std::shared_ptr<BrickComponent> brickComp = entity->GetComponent<BrickComponent>();
+				if (brickComp)
+				{
+					RemoveEntity(entity);
+				}
+				entityItr++;
+			}
+		}
 	}
 
+	if (looseEvent != nullptr)
 	{
-		// Start Text
-		std::shared_ptr<Entity> startGameUI = std::make_shared<Entity>();
-		std::shared_ptr<TextComponent> startGameText = startGameUI->AddComponent<TextComponent>();
-
-		startGameText->SetFont("../bin/Jamma.ttf");
-		startGameText->SetColor(255, 255, 255, 255);
-		startGameText->SetText("PRESS SPACE TO START GAME");
-		startGameText->CenterText();
-		int windowSizeX = 0;
-		int windowSizeY = 0;
-		Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-		// For some reason the center does not center
-		startGameText->SetPosition(windowSizeX / 2 -50, windowSizeY / 2);
-		startGameText->SetSize(32);
-
-		Engine::Instance()->AddEntity(startGameUI);
+		Engine::Instance()->SetGameState(eGameState::end);
 	}
-
-	// Attribution text
-	{
-	std::shared_ptr<Entity> attributionUI = std::make_shared<Entity>();
-	std::shared_ptr<TextComponent> attributionText = attributionUI->AddComponent<TextComponent>();
-
-	attributionText->SetFont("../bin/Jamma.ttf");
-	attributionText->SetColor(255, 255, 255, 255);
-	attributionText->SetText("Tetris Song: Bogozi, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons");
-	attributionText->CenterText();
-	int windowSizeX = 0;
-	int windowSizeY = 0;
-	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-	// For some reason the center does not center
-	attributionText->SetPosition(windowSizeX, windowSizeY - 40);
-	attributionText->SetSize(12);
-
-	Engine::Instance()->AddEntity(attributionUI);
-	}
-}
-
-void MapSystem::LoadGameUI()
-{
-	if (!Engine::Instance) 
-	{
-		return;
-	}
-	// Load Background Image
-	std::shared_ptr<Entity> bgEntity = std::make_shared<Entity>();
-	std::shared_ptr<SpriteComponent> bgSprite = bgEntity->AddComponent<SpriteComponent>();
-	bgSprite->CreateSprite("../bin/bg.png");
-	int windowSizeX = 0;
-	int windowSizeY = 0;
-	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-	bgSprite->SetPosition((windowSizeX / 3) + 4 * 45 + 23, (windowSizeY / 2) - 57);
-	Engine::Instance()->AddEntity(bgEntity);
-
-	// Load High Score Text
-	std::shared_ptr<Entity> iOEntity = std::make_shared<Entity>();
-	std::shared_ptr<TextComponent> iOText = iOEntity->AddComponent<TextComponent>();
-	std::shared_ptr<IOComponent> iOComp = iOEntity->AddComponent<IOComponent>();
-
-	iOText->SetFont("../bin/Jamma.ttf");
-	iOText->SetColor(255, 255, 255, 255);
-	iOText->SetPosition(10.0f, 10.0f);
-	iOText->SetSize(24);
-
-	Engine::Instance()->AddEntity(iOEntity);
-
-	// Load Score Text
-	std::shared_ptr<Entity> scoreEntity = std::make_shared<Entity>();
-	std::shared_ptr<TextComponent> scoreText = scoreEntity->AddComponent<TextComponent>();
-	std::shared_ptr<ScoreComponent> scoreComp = scoreEntity->AddComponent<ScoreComponent>();
-
-	scoreText->SetFont("../bin/Jamma.ttf");
-	scoreText->SetColor(255, 255, 255, 255);
-	scoreText->SetPosition(10.0f, 10.0f);
-	scoreText->SetSize(24);
-
-	Engine::Instance()->AddEntity(scoreEntity);
 }
 

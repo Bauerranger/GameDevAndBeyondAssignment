@@ -81,7 +81,6 @@ void IEventHandler::RemoveCallback(EventFunctor& callback)
 
 void IEventHandler::Call(std::shared_ptr<IEvent> event)
 {
-	std::vector<EventFunctor> copiedCallbacks = m_Callbacks;
 	for (EventFunctor& callback : m_Callbacks)
 	{
 		callback(event);
