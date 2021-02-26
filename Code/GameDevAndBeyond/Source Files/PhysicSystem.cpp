@@ -10,7 +10,7 @@ PhysicSystem::PhysicSystem()
 	m_Listener = std::make_shared<EventHandler>();
 	m_EventFunctor = std::bind(&PhysicSystem::OnEvent, this, std::placeholders::_1);
 	m_Listener->AddCallback(m_EventFunctor);
-	EventManager::GetInstance().AddEventListener(m_Listener);
+	EventManager::GetInstance().AddEventListener(m_Listener, eThreadImportance::direct);
 }
 
 PhysicSystem::~PhysicSystem()
