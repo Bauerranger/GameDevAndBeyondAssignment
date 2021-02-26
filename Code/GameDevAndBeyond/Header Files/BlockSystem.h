@@ -62,6 +62,8 @@ private:
 
 	///////////////////////////////////////////////////// Spawn
 	void SpawnBlock();
+	
+
 	void ResetPosition();
 	bool m_IsEnd = false;
 

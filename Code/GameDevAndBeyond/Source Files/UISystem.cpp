@@ -11,7 +11,7 @@ UISystem::UISystem()
 	m_Listener = std::make_shared<EventHandler>();
 	m_EventFunctor = std::bind(&UISystem::OnEvent, this, std::placeholders::_1);
 	m_Listener->AddCallback(m_EventFunctor);
-	EventManager::GetInstance().AddEventListener(m_Listener);
+	EventManager::GetInstance().AddEventListener(m_Listener, eThreadImportance::worker);
 }
 
 UISystem::~UISystem()
