@@ -41,7 +41,7 @@ bool MapSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void MapSystem::Update(Engine* engine, float dt)
 {
-	if (!Engine::Instance || !Engine::Instance()->IsRunning())
+	if (!Engine::Instance()->IsRunning())
 	{
 		return;
 	}
@@ -69,10 +69,6 @@ void MapSystem::UpdateSingleEntityPosition(std::shared_ptr<Entity> entity, float
 
 void MapSystem::UpdateSingleEntityCollision(std::shared_ptr<Entity> entity, float dt)
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	int mapSizeY = sizeof(m_MapMatrix) / sizeof(m_MapMatrix[0]);
 	int mapSizeX = sizeof(m_MapMatrix[0]);
 	bool collisionHasHappened = false;
@@ -205,10 +201,6 @@ void MapSystem::UpdateMap()
 
 void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	std::shared_ptr<GameStartEvent> startEvent = std::dynamic_pointer_cast<GameStartEvent>(event);
 	std::shared_ptr<PhysicUpdateEvent> physicUpdateEvent = std::dynamic_pointer_cast<PhysicUpdateEvent>(event);
 	std::shared_ptr<GameStateChangeEvent> changeEvent = std::dynamic_pointer_cast<GameStateChangeEvent>(event);
@@ -259,7 +251,7 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 
 	if (changeEvent != nullptr)
 	{
-		if (!Engine::Instance && !Engine::Instance()->IsRunning())
+		if (!Engine::Instance()->IsRunning())
 		{
 			return;
 		}

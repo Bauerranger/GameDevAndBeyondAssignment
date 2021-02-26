@@ -27,12 +27,12 @@ Engine::Engine(int width, int height, std::string text, bool fullscreen)
 
 Engine::~Engine()
 {
+	m_IsRunning = false;
+	JoinThreads();
 	if (s_pInstance == this)
 	{
 		s_pInstance = nullptr;
 	}
-	m_IsRunning = false;
-	JoinThreads();
 }
 
 void Engine::Update()

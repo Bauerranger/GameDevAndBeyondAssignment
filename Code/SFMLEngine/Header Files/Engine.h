@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <thread>
+#include <mutex>
 
 #include "Window.h"
 #include "InputHelper.h"
@@ -33,7 +34,6 @@ public:
 	Engine(int width, int height, std::string text, bool fullscreen);
 	~Engine();
 
-	// TODO: Make destructor wait for all updates to end
 	
 	///////////////////////////////////////////////////// Singleton
 	static Engine* Instance();
@@ -73,7 +73,7 @@ public:
 	void GetViewCenter(float& X, float& Y);
 
 	///////////////////////////////////////////////////// Threading
-	void JoinThreads() { m_RenderThread.join(); m_WorkerThread.join(); }
+	void JoinThreads() { m_RenderThread.join(); m_WorkerThread.join(); };
 
 private:
 	///////////////////////////////////////////////////// Window handling

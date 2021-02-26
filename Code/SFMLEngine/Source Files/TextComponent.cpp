@@ -50,10 +50,6 @@ void TextComponent::CenterText()
 
 void TextComponent::SetVisibilityOnStateChange()
 {
-	if (!Engine::Instance) 
-	{
-		return;
-	}
 	eGameState state;
 	Engine::Instance()->GetGameState(state);
 	if (state == m_VisibleState) 
@@ -61,7 +57,7 @@ void TextComponent::SetVisibilityOnStateChange()
 		sf::Color color(255, 255, 255, 255);
 		m_Text->setFillColor(color);
 		// TODO m_Color is changed somewhere find out why
-		//m_Text->setFillColor(m_Color);
+		// m_Text->setFillColor(m_Color);
 	}
 	else 
 	{

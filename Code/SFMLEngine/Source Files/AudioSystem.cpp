@@ -30,8 +30,11 @@ bool AudioSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void AudioSystem::Update(Engine* engine, float dt)
 {
-	// TODO find out why this sometimes triggers an access violation
-	// Lock entities?
+	// TODO: Find why there is an error sometimes
+	if (m_Entities.size() == 0)
+	{
+		return;
+	}
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
@@ -61,10 +64,6 @@ inline bool AudioSystem::UpdateSingleEntity(Engine* engine, std::shared_ptr<Enti
 
 void AudioSystem::PlayMusic()
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	if (std::filesystem::exists("../bin/Tetris_theme.ogg"))
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
@@ -75,10 +74,6 @@ void AudioSystem::PlayMusic()
 
 void AudioSystem::PlayScore()
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	if (std::filesystem::exists("../bin/Score.ogg"))
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
@@ -89,10 +84,6 @@ void AudioSystem::PlayScore()
 
 void AudioSystem::PlayCollision()
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	if (std::filesystem::exists("../bin/Collision.ogg"))
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
@@ -103,10 +94,6 @@ void AudioSystem::PlayCollision()
 
 void AudioSystem::PlayEnd()
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	if (std::filesystem::exists("../bin/End.ogg"))
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();

@@ -43,7 +43,7 @@ void UISystem::Update(Engine* engine, float dt)
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
-		if (!Engine::Instance && !Engine::Instance()->IsRunning())
+		if (!Engine::Instance()->IsRunning())
 		{
 			return;
 		}
@@ -64,9 +64,9 @@ void UISystem::Update(Engine* engine, float dt)
 		{
 			if (state == eGameState::end)
 			{
-				textComp->SetSize(48);
+				textComp->SetSize(32);
 				int highscore = 0;
-				std::string highscoreChampion;
+				/*std::string highscoreChampion;
 				iOComp->GetScore(highscoreChampion, highscore);
 				char input = A;
 				InputHelper::GetInput(input);
@@ -74,27 +74,20 @@ void UISystem::Update(Engine* engine, float dt)
 				{
 					m_Name = m_Name + input;
 				}
+				
 				if (highscore >= m_Score)
 				{
 					textComp->SetText("Current highscore: " + std::to_string(highscore) + " by: " + highscoreChampion);
-					//Delete me
-					/*
-					textComp->SetText("New highscore: " + std::to_string(m_Score) + " Enter your name: " + m_Name);
-					if (engine->IsKeyPressed(Key::Enter))
+				}*/
+				//if (highscore < m_Score)
+				//{
+					textComp->SetText("YOUR SCORE: " + std::to_string(m_Score));
+					/*if (engine->IsKeyPressed(Key::Enter))
 					{
 						iOComp->SetScore(m_Name, m_Score);
 						iOComp->SaveScoreToDrive();
 					}*/
-				}
-				if (highscore < m_Score)
-				{
-					textComp->SetText("New highscore: " + std::to_string(m_Score) + " Enter your name: " + m_Name);
-					if (engine->IsKeyPressed(Key::Enter))
-					{
-						iOComp->SetScore(m_Name, m_Score);
-						iOComp->SaveScoreToDrive();
-					}
-				}
+				//}
 			}
 		}
 		++entityItr;
@@ -108,11 +101,6 @@ void UISystem::Init(Engine* engine)
 
 void UISystem::LoadStartUI()
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
-
 	// Start Text
 	{
 		int windowSizeX = 0;
@@ -162,7 +150,7 @@ void UISystem::LoadStartUI()
 		int windowSizeX = 0;
 		int windowSizeY = 0;
 		Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-		int posX = windowSizeX / 5;
+		int posX = windowSizeX / 2 - 300;
 		int posY = windowSizeY / 2;
 		std::shared_ptr<Entity> iOEntity = std::make_shared<Entity>();
 		CreateTextEntity(iOEntity, 255, 255, 255, 255,
@@ -214,7 +202,7 @@ void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 		for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 		{
-			if (!Engine::Instance && !Engine::Instance()->IsRunning())
+			if (!Engine::Instance()->IsRunning())
 			{
 				return;
 			}

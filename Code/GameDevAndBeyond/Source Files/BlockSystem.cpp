@@ -59,7 +59,6 @@ BlockSystem::~BlockSystem()
 
 void BlockSystem::Init(Engine* engine)
 {
-	// TODO: Make block spawn after init (Maybe a start function)
 }
 
 bool BlockSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
@@ -76,7 +75,7 @@ bool BlockSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void BlockSystem::Update(Engine* engine, float dt)
 {
-	if (!Engine::Instance && !Engine::Instance()->IsRunning())
+	if (!Engine::Instance()->IsRunning())
 	{
 		return;
 	}
@@ -448,10 +447,6 @@ inline void BlockSystem::SetSpritePosOnWindow(std::vector<std::shared_ptr<Entity
 	int brickMatrixPosX,
 	int brickMatrixPosY)
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	std::shared_ptr<SpriteComponent> spriteComponent = movedEntities[movedEntitiesCounter]->GetComponent<SpriteComponent>();
 	float spritePosX = brickMatrixPosX * 45;
 	float spritePosY = brickMatrixPosY * 45;
@@ -463,10 +458,6 @@ inline void BlockSystem::SetSpritePosOnWindow(std::vector<std::shared_ptr<Entity
 
 void BlockSystem::SpawnBlock()
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	eGameState state;
 	Engine::Instance()->GetGameState(state);
 	if (state == eGameState::end)
@@ -517,10 +508,6 @@ void BlockSystem::SpawnBlock()
 
 void BlockSystem::ResetPosition()
 {
-	if (!Engine::Instance)
-	{
-		return;
-	}
 	int windowSizeX = 0;
 	int windowSizeY = 0;
 	Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
