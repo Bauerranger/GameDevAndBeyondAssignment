@@ -55,8 +55,8 @@ void Engine::Update()
 		{
 			system->Update(this, m_dt);
 		}
-		//update all main events
-		EventManager::GetInstance().Update(eThreadImportance::direct);
+		//update all events
+		EventManager::GetInstance().Update();
 		//at the end of the update, decrement the accumulator by the fixed time
 		m_AccumulatedTime -= m_dt;
 	}
@@ -68,18 +68,16 @@ void Engine::UpdateWorkerSystems()
 	{
 		while (m_AccumulatedTime >= m_dt)
 		{
-			if (!m_IsRunning)
-			{
-				return;
-			}
 			//update all systems
 			for (std::shared_ptr<ISystem> system : m_WorkerSystems)
 			{
 				if (m_IsRunning)
 					system->Update(this, m_dt);
 			}
-			//update all worker events
-			EventManager::GetInstance().Update(eThreadImportance::worker);
+			if (!m_IsRunning)
+			{
+				return;
+			}
 		}
 	}
 }
@@ -91,21 +89,19 @@ void Engine::UpdateRenderSystems()
 	{
 		while (m_AccumulatedTime >= m_dt)
 		{
-			if (!m_IsRunning)
-			{
-				Draw();
-				return;
-			}
 			//update all systems
 			for (std::shared_ptr<ISystem> system : m_RenderSystems)
 			{
 				if (m_IsRunning)
 					system->Update(this, m_dt);
 			}
+			if (!m_IsRunning)
+			{
+				Draw();
+				return;
+			}
 		}
 		Draw();
-		//update all render events
-		EventManager::GetInstance().Update(eThreadImportance::render);
 	}
 }
 

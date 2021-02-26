@@ -49,7 +49,7 @@ void AudioSystem::Init(Engine* engine)
 	m_Listener = std::make_shared<EventHandler>();
 	m_EventFunctor = std::bind(&AudioSystem::OnEvent, this, std::placeholders::_1);
 	m_Listener->AddCallback(m_EventFunctor);
-	EventManager::GetInstance().AddEventListener(m_Listener, eThreadImportance::worker);
+	EventManager::GetInstance().AddEventListener(m_Listener);
 }
 
 inline bool AudioSystem::UpdateSingleEntity(Engine* engine, std::shared_ptr<Entity> entity, float dt)

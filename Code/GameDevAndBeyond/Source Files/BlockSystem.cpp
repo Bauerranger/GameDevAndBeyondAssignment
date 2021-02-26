@@ -21,7 +21,7 @@ BlockSystem::BlockSystem()
 	m_EventListener = std::make_shared<EventHandler>();
 	m_EventFunctor = std::bind(&BlockSystem::OnEvent, this, std::placeholders::_1);
 	m_EventListener->AddCallback(m_EventFunctor);
-	EventManager::GetInstance().AddEventListener(m_EventListener, eThreadImportance::direct);
+	EventManager::GetInstance().AddEventListener(m_EventListener);
 	//setting up different shapes for the blocks
 	BlockShape longBlock = { 1,1,1,1,
 								0,0,0,0 };
