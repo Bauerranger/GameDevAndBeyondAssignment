@@ -4,9 +4,9 @@
 #include "..\Header Files\BrickComponent.h"
 #include "..\Header Files\IOComponent.h"
 #include "..\Header Files\ScoreComponent.h"
-#include <SFMLEngine/Header Files/Engine.h>
 #include <SFMLEngine/Header Files/TextComponent.h>
 #include <SFMLEngine/Header Files/SpriteComponent.h>
+#include <SFMLEngine/Header Files/Engine.h>
 #include <SFMLEngine/Header Files/SpriteComponent.h>
 #include <iostream>
 #include <vector>
@@ -17,7 +17,7 @@ MapSystem::MapSystem()
 	m_Listener = std::make_shared<EventHandler>();
 	m_EventFunctor = std::bind(&MapSystem::OnEvent, this, std::placeholders::_1);
 	m_Listener->AddCallback(m_EventFunctor);
-	EventManager::GetInstance().AddEventListener(m_Listener, eThreadImportance::direct);
+	EventManager::GetInstance().AddEventListener(m_Listener);
 }
 
 MapSystem::~MapSystem()
