@@ -30,18 +30,16 @@ bool AudioSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 
 void AudioSystem::Update(Engine* engine, float dt)
 {
-	// TODO: Find why there is an error sometimes
-	if (m_Entities.size() == 0)
-	{
-		return;
-	}
+	std::lock_guard<std::mutex> lock(m_Mutex);
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
 		std::shared_ptr<Entity> entity = *entityItr;
 		if (!UpdateSingleEntity(engine, entity, dt))
 		{
+			m_Mutex.unlock();
 			engine->RemoveEntity(entity);
+			m_Mutex.lock();
 		}
 		++entityItr;
 	}

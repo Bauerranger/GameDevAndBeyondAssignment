@@ -36,6 +36,7 @@ bool UISystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 // TODO: only update when needed
 void UISystem::Update(Engine* engine, float dt)
 {
+	std::lock_guard<std::mutex> lock(m_Mutex);
 	if (m_Entities.size() == 0)
 	{
 		return;

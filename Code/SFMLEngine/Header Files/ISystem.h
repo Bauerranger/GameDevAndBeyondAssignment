@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include "Entity.h"
 
 class Engine;
@@ -16,4 +17,6 @@ public:
 
 protected:
 	std::vector<std::shared_ptr<Entity>> m_Entities;
+	std::mutex m_Mutex;
+
 };

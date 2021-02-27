@@ -21,6 +21,7 @@ void ISystem::AddEntity(std::shared_ptr<Entity> entity)
 
 void ISystem::RemoveEntity(std::shared_ptr<Entity> entity)
 {
+	std::lock_guard<std::mutex> lock(m_Mutex);
 	std::vector<std::shared_ptr<Entity>>::iterator entityIterator = std::find(m_Entities.begin(), m_Entities.end(), entity);
 	if (entityIterator == m_Entities.end())
 	{
