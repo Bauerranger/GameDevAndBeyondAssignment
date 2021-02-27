@@ -74,19 +74,19 @@ void UISystem::Update(Engine* engine, float dt)
 				{
 					m_Name = m_Name + input;
 				}
-				
+
 				if (highscore >= m_Score)
 				{
 					textComp->SetText("Current highscore: " + std::to_string(highscore) + " by: " + highscoreChampion);
 				}*/
 				//if (highscore < m_Score)
 				//{
-					textComp->SetText("YOUR SCORE: " + std::to_string(m_Score));
-					/*if (engine->IsKeyPressed(Key::Enter))
-					{
-						iOComp->SetScore(m_Name, m_Score);
-						iOComp->SaveScoreToDrive();
-					}*/
+				textComp->SetText("YOUR SCORE: " + std::to_string(m_Score));
+				/*if (engine->IsKeyPressed(Key::Enter))
+				{
+					iOComp->SetScore(m_Name, m_Score);
+					iOComp->SaveScoreToDrive();
+				}*/
 				//}
 			}
 		}
@@ -116,6 +116,7 @@ void UISystem::LoadStartUI()
 			true, posX, posY, 32, eGameState::start);
 
 		Engine::Instance()->AddEntity(startGameUI);
+		m_StartGameUI = startGameUI;
 	}
 
 	// Attribution text
@@ -133,6 +134,7 @@ void UISystem::LoadStartUI()
 			true, posX, posY, 12, eGameState::start);
 
 		Engine::Instance()->AddEntity(attributionUI);
+		m_AttributionUI = attributionUI;
 	}
 	// Load Score Text
 	{
@@ -158,8 +160,8 @@ void UISystem::LoadStartUI()
 			eGameState::end);
 
 		std::shared_ptr<IOComponent> iOComp = iOEntity->AddComponent<IOComponent>();
-
 		Engine::Instance()->AddEntity(iOEntity);
+		m_iOEntity = iOEntity;
 	}
 }
 
@@ -182,9 +184,7 @@ void UISystem::CreateTextEntity(std::shared_ptr<Entity> entity, const int red, c
 
 void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 {
-	std::shared_ptr<GameStateChangeEvent> changeEvent = std::dynamic_pointer_cast<GameStateChangeEvent>(event);
 	std::shared_ptr<ScoreEvent> scoreEvent = std::dynamic_pointer_cast<ScoreEvent>(event);
-
 	if (scoreEvent != nullptr)
 	{
 		m_Score += scoreEvent->Score;
@@ -197,6 +197,7 @@ void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 		}
 	}
 
+	std::shared_ptr<GameStateChangeEvent> changeEvent = std::dynamic_pointer_cast<GameStateChangeEvent>(event);
 	if (changeEvent != nullptr)
 	{
 		std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
@@ -210,6 +211,14 @@ void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 			std::shared_ptr<TextComponent> textComp = entity->GetComponent<TextComponent>();
 			textComp->SetVisibilityOnStateChange();
 			entityItr++;
+		}
+		eGameState state;
+		Engine::Instance()->GetGameState(state);
+		if (state == eGameState::start)
+		{
+			m_iOEntity->GetComponent<TextComponent>()->SetColor(255, 255, 255, 0);
+			m_StartGameUI->GetComponent<TextComponent>()->SetColor(255, 255, 255, 255);
+			m_AttributionUI->GetComponent<TextComponent>()->SetColor(255, 255, 255, 255);
 		}
 	}
 }

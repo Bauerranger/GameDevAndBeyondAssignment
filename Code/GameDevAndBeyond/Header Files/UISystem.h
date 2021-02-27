@@ -32,4 +32,7 @@ private:
 
 	std::string m_Name;
 	int m_Level = 1;
+	std::shared_ptr<Entity> m_iOEntity;
+	std::shared_ptr<Entity> m_AttributionUI;
+	std::shared_ptr<Entity> m_StartGameUI;
 };

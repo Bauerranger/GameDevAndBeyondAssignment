@@ -39,7 +39,8 @@ public:
 	static Engine* Instance();
 public:
 	///////////////////////////////////////////////////// Window handling
-	const bool IsRunning() { return this == nullptr ? false : m_IsRunning; };
+	const bool IsRunning() { return m_IsRunning; };
+	void CloseApplication() { m_IsRunning = false; };
 	void Update();
 
 	void UpdateWorkerSystems();

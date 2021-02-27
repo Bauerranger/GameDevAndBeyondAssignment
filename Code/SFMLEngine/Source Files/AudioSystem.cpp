@@ -69,6 +69,7 @@ void AudioSystem::PlayMusic()
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 		std::shared_ptr<AudioComponent> comp = entity->AddComponent("../bin/Tetris_theme.ogg", true);
 		Engine::Instance()->AddEntity(entity);
+		m_Music = entity;
 	}
 }
 
@@ -128,5 +129,6 @@ void AudioSystem::OnEvent(std::shared_ptr<IEvent> event)
 	if (looseEvent != nullptr)
 	{
 		PlayEnd();
+		m_Music->GetComponent<AudioComponent>()->StopAudio();
 	}
 }

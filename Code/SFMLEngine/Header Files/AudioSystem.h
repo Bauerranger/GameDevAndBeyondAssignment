@@ -26,4 +26,5 @@ private:
 	void OnEvent(std::shared_ptr<IEvent> event);
 	std::shared_ptr<EventHandler> m_Listener;
 	EventFunctor m_EventFunctor;
+	std::shared_ptr<Entity> m_Music;
 };

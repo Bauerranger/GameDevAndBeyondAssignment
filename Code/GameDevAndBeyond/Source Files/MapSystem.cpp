@@ -53,12 +53,16 @@ void MapSystem::Update(Engine* engine, float dt)
 		EventManager::GetInstance().PushEvent(startEvent);
 	}
 	Engine::Instance()->GetGameState(state);
-	if (state == eGameState::end && engine->IsKeyPressed(Key::Space))
+	if (state == eGameState::end && engine->IsKeyPressed(Key::Enter))
 	{
 		std::shared_ptr<GameRestartEvent> restartEvent = std::make_shared<GameRestartEvent>();
 		EventManager::GetInstance().PushEvent(restartEvent);
 	}
 
+	if (engine->IsKeyPressed(Key::Escape))
+	{
+		Engine::Instance()->CloseApplication();
+	}
 	m_DeltaTime = dt;
 }
 
@@ -211,6 +215,7 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 	std::shared_ptr<PhysicUpdateEvent> physicUpdateEvent = std::dynamic_pointer_cast<PhysicUpdateEvent>(event);
 	std::shared_ptr<GameStateChangeEvent> changeEvent = std::dynamic_pointer_cast<GameStateChangeEvent>(event);
 	std::shared_ptr<LooseEvent> looseEvent = std::dynamic_pointer_cast<LooseEvent>(event);
+	std::shared_ptr<GameRestartEvent> restartEvent = std::dynamic_pointer_cast<GameRestartEvent>(event);
 
 
 	if (startEvent != nullptr)
@@ -279,6 +284,11 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 			}
 			Engine::Instance()->RemoveEntity(m_BGEntity);
 		}
+	}
+
+	if (restartEvent != nullptr)
+	{
+		Engine::Instance()->SetGameState(eGameState::start);
 	}
 
 	if (looseEvent != nullptr)
