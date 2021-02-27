@@ -16,23 +16,23 @@ public:
 
 	void Save(const std::string& filePath);
 
-	virtual bool IsInput() const override { return false; }
-	virtual bool IsOutput() const override { return true; }
+	bool IsInput() const override { return false; }
+	bool IsOutput() const override { return true; }
 
-	virtual void Serialize(bool& value, const std::string& label) override;
-	virtual void Serialize(sf::Uint8& value, const std::string& label) override;
-	virtual void Serialize(sf::Int8& value, const std::string& label) override;
-	virtual void Serialize(sf::Uint16& value, const std::string& label) override;
-	virtual void Serialize(sf::Int16& value, const std::string& label) override;
-	virtual void Serialize(sf::Uint32& value, const std::string& label) override;
-	virtual void Serialize(sf::Int32& value, const std::string& label) override;
-	virtual void Serialize(sf::Uint64& value, const std::string& label) override;
-	virtual void Serialize(sf::Int64& value, const std::string& label) override;
-	virtual void Serialize(float& value, const std::string& label) override;
-	virtual void Serialize(double& value, const std::string& label) override;
-	virtual void Serialize(std::string& value, const std::string& label) override;
-	virtual void Serialize(VectorInterface& value, const std::string& label) override;
-	virtual void Serialize(ObjectInterface& value, const std::string& label) override;
+	void Serialize(bool& value, const std::string& label) override;
+	void Serialize(sf::Uint8& value, const std::string& label) override;
+	void Serialize(sf::Int8& value, const std::string& label) override;
+	void Serialize(sf::Uint16& value, const std::string& label) override;
+	void Serialize(sf::Int16& value, const std::string& label) override;
+	void Serialize(sf::Uint32& value, const std::string& label) override;
+	void Serialize(sf::Int32& value, const std::string& label) override;
+	void Serialize(sf::Uint64& value, const std::string& label) override;
+	void Serialize(sf::Int64& value, const std::string& label) override;
+	void Serialize(float& value, const std::string& label) override;
+	void Serialize(double& value, const std::string& label) override;
+	void Serialize(std::string& value, const std::string& label) override;
+	void Serialize(VectorInterface& value, const std::string& label) override;
+	void Serialize(ObjectInterface& value, const std::string& label) override;
 
 private:
 
@@ -50,23 +50,23 @@ public:
 
 	void Load(const std::string& filePath);
 
-	virtual bool IsInput() const override { return true; }
-	virtual bool IsOutput() const override { return false; }
+	bool IsInput() const override { return true; }
+	bool IsOutput() const override { return false; }
 
-	virtual void Serialize(bool& value, const std::string& label) override;
-	virtual void Serialize(sf::Uint8& value, const std::string& label) override;
-	virtual void Serialize(sf::Int8& value, const std::string& label) override;
-	virtual void Serialize(sf::Uint16& value, const std::string& label) override;
-	virtual void Serialize(sf::Int16& value, const std::string& label) override;
-	virtual void Serialize(sf::Uint32& value, const std::string& label) override;
-	virtual void Serialize(sf::Int32& value, const std::string& label) override;
-	virtual void Serialize(sf::Uint64& value, const std::string& label) override;
-	virtual void Serialize(sf::Int64& value, const std::string& label) override;
-	virtual void Serialize(float& value, const std::string& label) override;
-	virtual void Serialize(double& value, const std::string& label) override;
-	virtual void Serialize(std::string& value, const std::string& label) override;
-	virtual void Serialize(VectorInterface& value, const std::string& label) override;
-	virtual void Serialize(ObjectInterface& value, const std::string& label) override;
+	void Serialize(bool& value, const std::string& label) override;
+	void Serialize(sf::Uint8& value, const std::string& label) override;
+	void Serialize(sf::Int8& value, const std::string& label) override;
+	void Serialize(sf::Uint16& value, const std::string& label) override;
+	void Serialize(sf::Int16& value, const std::string& label) override;
+	void Serialize(sf::Uint32& value, const std::string& label) override;
+	void Serialize(sf::Int32& value, const std::string& label) override;
+	void Serialize(sf::Uint64& value, const std::string& label) override;
+	void Serialize(sf::Int64& value, const std::string& label) override;
+	void Serialize(float& value, const std::string& label) override;
+	void Serialize(double& value, const std::string& label) override;
+	void Serialize(std::string& value, const std::string& label) override;
+	void Serialize(VectorInterface& value, const std::string& label) override;
+	void Serialize(ObjectInterface& value, const std::string& label) override;
 
 private:
 

@@ -2,13 +2,10 @@
 #include <SFML/Graphics.hpp>
 
 TextureManager::TextureManager()
-{
-
-}
+= default;
 
 TextureManager::~TextureManager()
-{
-}
+= default;
 
 sf::Texture* TextureManager::GetTexture(std::string texturePath)
 {

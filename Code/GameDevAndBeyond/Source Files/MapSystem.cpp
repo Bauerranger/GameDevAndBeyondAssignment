@@ -52,6 +52,12 @@ void MapSystem::Update(Engine* engine, float dt)
 		std::shared_ptr<GameStartEvent> startEvent = std::make_shared<GameStartEvent>();
 		EventManager::GetInstance().PushEvent(startEvent);
 	}
+	Engine::Instance()->GetGameState(state);
+	if (state == eGameState::end && engine->IsKeyPressed(Key::Space))
+	{
+		std::shared_ptr<GameRestartEvent> restartEvent = std::make_shared<GameRestartEvent>();
+		EventManager::GetInstance().PushEvent(restartEvent);
+	}
 
 	m_DeltaTime = dt;
 }
@@ -218,6 +224,7 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 		Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
 		bgSprite->SetPosition((windowSizeX / 3) + 4 * 45 + 23, (windowSizeY / 2) - 57);
 		Engine::Instance()->AddEntity(bgEntity);
+		m_BGEntity = bgEntity;
 
 		Engine::Instance()->SetGameState(eGameState::game);
 	}
@@ -266,10 +273,11 @@ void MapSystem::OnEvent(std::shared_ptr<IEvent> event)
 				std::shared_ptr<BrickComponent> brickComp = entity->GetComponent<BrickComponent>();
 				if (brickComp)
 				{
-					RemoveEntity(entity);
+					Engine::Instance()->RemoveEntity(entity);
 				}
 				entityItr++;
 			}
+			Engine::Instance()->RemoveEntity(m_BGEntity);
 		}
 	}
 

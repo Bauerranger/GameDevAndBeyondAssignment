@@ -37,7 +37,7 @@ private:
 
 private:
 	std::vector<Tile> m_Tiles;
-	std::string m_TextureUrl = "";
+	std::string m_TextureUrl;
 	unsigned int m_Width = 0;
 	unsigned int m_Height = 0;
 	unsigned int m_TileWidth = 0;

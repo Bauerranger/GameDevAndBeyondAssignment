@@ -1,14 +1,12 @@
 #include "../Header Files/PhysicComponent.h"
 
 PhysicComponent::PhysicComponent()
-{
-}
+= default;
 
 PhysicComponent::~PhysicComponent()
-{
-}
+= default;
 
-void PhysicComponent::GetUpdateWaitTime(float & updateWaitTime)
+void PhysicComponent::GetUpdateWaitTime(float& updateWaitTime)
 {
 	updateWaitTime = m_UpdateWaitTime;
 }

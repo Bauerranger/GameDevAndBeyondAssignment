@@ -9,7 +9,7 @@ public:
 	~NetworkingSystem();
 public:
 	//ISystem
-	virtual bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
+	bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
 
 public:
 };

@@ -1,14 +1,10 @@
 #include "../Header Files/ScoreComponent.h"
 
 ScoreComponent::ScoreComponent()
-{
-
-}
+= default;
 
 ScoreComponent::~ScoreComponent()
-{
-
-}
+= default;
 
 void ScoreComponent::GetScore(int& score)
 {

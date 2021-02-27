@@ -51,7 +51,7 @@ void Engine::Update()
 			m_IsRunning = false;
 			return;
 		}
-		for (std::shared_ptr<ISystem> system : m_DirectSystems)
+		for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
 		{
 			system->Update(this, m_dt);
 		}
@@ -69,7 +69,7 @@ void Engine::UpdateWorkerSystems()
 		while (m_AccumulatedTime >= m_dt)
 		{
 			//update all systems
-			for (std::shared_ptr<ISystem> system : m_WorkerSystems)
+			for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
 			{
 				if (m_IsRunning)
 					system->Update(this, m_dt);
@@ -90,7 +90,7 @@ void Engine::UpdateRenderSystems()
 		while (m_AccumulatedTime >= m_dt)
 		{
 			//update all systems
-			for (std::shared_ptr<ISystem> system : m_RenderSystems)
+			for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
 			{
 				if (m_IsRunning)
 					system->Update(this, m_dt);
@@ -150,7 +150,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 	}
 	m_Entities.push_back(entity);
 
-	for (std::shared_ptr<ISystem> system : m_DirectSystems)
+	for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -158,7 +158,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		}
 	}
 
-	for (std::shared_ptr<ISystem> system : m_WorkerSystems)
+	for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -166,7 +166,7 @@ void Engine::AddEntity(std::shared_ptr<Entity> entity)
 		}
 	}
 
-	for (std::shared_ptr<ISystem> system : m_RenderSystems)
+	for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
 	{
 		if (system->DoesEntityMatch(entity))
 		{
@@ -184,17 +184,17 @@ void Engine::RemoveEntity(std::shared_ptr<Entity> entity)
 	}
 	m_Entities.erase(entityIterator);
 
-	for (std::shared_ptr<ISystem> system : m_DirectSystems)
+	for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
 	{
 		system->RemoveEntity(entity);
 	}
 
-	for (std::shared_ptr<ISystem> system : m_WorkerSystems)
+	for (const std::shared_ptr<ISystem>& system : m_WorkerSystems)
 	{
 		system->RemoveEntity(entity);
 	}
 
-	for (std::shared_ptr<ISystem> system : m_RenderSystems)
+	for (const std::shared_ptr<ISystem>& system : m_RenderSystems)
 	{
 		system->RemoveEntity(entity);
 	}
@@ -229,7 +229,7 @@ void Engine::AddSystem(std::shared_ptr<ISystem> system, eThreadImportance import
 		break;
 	}
 
-	for (std::shared_ptr<Entity> entity : m_Entities)
+	for (const std::shared_ptr<Entity>& entity : m_Entities)
 	{
 		if (system->DoesEntityMatch(entity))
 		{

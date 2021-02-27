@@ -14,7 +14,7 @@ struct ObjectInterface_Impl : public ObjectInterface
 		: objectReference(value)
 	{ }
 
-	virtual void SerializeObject(IArchive& archive) override
+	void SerializeObject(IArchive& archive) override
 	{
 		objectReference.Serialize(archive);
 	}

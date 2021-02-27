@@ -6,7 +6,7 @@
 
 struct NamedScore
 {
-	std::string name = "";
+	std::string name;
 	int score = 0;
 };
 
@@ -24,6 +24,6 @@ public:
 	void SortNamedScore(std::vector<std::shared_ptr<NamedScore>> vector);
 private:
 	std::vector<std::shared_ptr<NamedScore>> m_HighScoreList;
-	int m_HighscoreInt;
+	int m_HighscoreInt = 0;
 	std::string m_HighscoreString;
 }; 

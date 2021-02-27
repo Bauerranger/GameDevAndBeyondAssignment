@@ -8,20 +8,16 @@ class IEvent
 {
 public:
 	virtual ~IEvent()
-	{
-
-	}
+		= default;
 };
 
-typedef std::function<void(std::shared_ptr<IEvent>)> EventFunctor;
+using EventFunctor = std::function<void(std::shared_ptr<IEvent>)>;
 
 class IEventHandler
 {
 public:
 	virtual ~IEventHandler()
-	{
-
-	}
+		= default;
 public:
 	virtual bool DoesEventMatch(std::shared_ptr<IEvent> event) = 0;
 	void AddCallback(EventFunctor& callback);

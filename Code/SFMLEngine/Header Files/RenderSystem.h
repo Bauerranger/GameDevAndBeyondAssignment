@@ -10,7 +10,7 @@ public:
 	~RenderSystem();
 public:
 	//ISystem
-	virtual bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
+	bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
 
 public:
 	void Draw(std::shared_ptr<Window> window);

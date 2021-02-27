@@ -22,7 +22,7 @@ private:
 	std::shared_ptr<EventHandler> m_Listener;
 	EventFunctor m_EventFunctor;
 	float m_DeltaTime;
-	std::atomic_bool m_MapMatrix[20][10] = { 0 };
-	std::atomic_bool m_CollisionHasHappened = false;
-	std::vector<std::shared_ptr<Entity>> m_MarkedForDelete;
+	std::atomic_bool m_MapMatrix[20][10] = { false };
+	std::atomic_bool m_CollisionHasHappened = false; 
+	std::shared_ptr<Entity> m_BGEntity;
 };

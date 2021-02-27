@@ -13,8 +13,8 @@ public:
 	~UISystem();
 public:
 	//ISystem
-	virtual bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
-	virtual void Update(Engine* engine, float dt) override;
+	bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
+	void Update(Engine* engine, float dt) override;
 
 	void Init(Engine* engine) override;
 

@@ -4,13 +4,10 @@
 #include <SFML/System/FileInputStream.hpp>
 
 LevelComponent::LevelComponent()
-{
-
-}
+= default;
 
 LevelComponent::~LevelComponent()
-{
-}
+= default;
 
 void LevelComponent::CreateTileset(std::string url, int tileWidth, int tileHeight)
 {

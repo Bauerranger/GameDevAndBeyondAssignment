@@ -6,14 +6,10 @@
 #include <SFML/Graphics.hpp>
 
 RenderSystem::RenderSystem()
-{
-
-}
+= default;
 
 RenderSystem::~RenderSystem()
-{
-
-}
+= default;
 
 bool RenderSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 {
@@ -27,7 +23,7 @@ bool RenderSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 void RenderSystem::Draw(std::shared_ptr<Window> window)
 {
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
-	for (std::shared_ptr<Entity> entity : copiedEntities)
+	for (const std::shared_ptr<Entity>& entity : copiedEntities)
 	{
 		std::shared_ptr<SpriteComponent> sprite = entity->GetComponent<SpriteComponent>();
 		std::shared_ptr<TextComponent> text = entity->GetComponent<TextComponent>();

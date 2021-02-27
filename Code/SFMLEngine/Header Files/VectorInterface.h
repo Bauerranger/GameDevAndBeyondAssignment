@@ -18,17 +18,17 @@ struct VectorInterface_Impl : public VectorInterface
 		: vectorReference(vector)
 	{ }
 
-	virtual size_t GetSize() const override
+	size_t GetSize() const override
 	{
 		return vectorReference.size();
 	}
 
-	virtual void Resize(size_t newSize) override
+	void Resize(size_t newSize) override
 	{
 		vectorReference.resize(newSize);
 	}
 
-	virtual void SerializeElement(IArchive& archive, size_t index) override
+	void SerializeElement(IArchive& archive, size_t index) override
 	{
 		archive.Serialize(vectorReference[index], std::to_string(index));
 	}

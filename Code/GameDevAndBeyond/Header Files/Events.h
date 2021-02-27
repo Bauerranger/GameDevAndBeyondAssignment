@@ -35,6 +35,10 @@ class GameStateChangeEvent : public IEvent
 {
 };
 
+class GameRestartEvent : public IEvent
+{
+};
+
 class EventHandler : public IEventHandler
 {
 public:
@@ -47,6 +51,7 @@ public:
 			|| std::dynamic_pointer_cast<LevelUpEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<LooseEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<ScoreEvent>(event) != nullptr
+			|| std::dynamic_pointer_cast<GameRestartEvent>(event) != nullptr
 			|| std::dynamic_pointer_cast<GameStateChangeEvent>(event) != nullptr)
 		{
 			return true;

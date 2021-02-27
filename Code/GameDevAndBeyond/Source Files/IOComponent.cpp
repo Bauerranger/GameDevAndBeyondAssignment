@@ -5,14 +5,10 @@
 #include <algorithm>
 
 IOComponent::IOComponent()
-{
-	// TODO: Rework score system
-	//LoadScoreFromDrive();
-}
+= default;
 
 IOComponent::~IOComponent()
-{
-}
+= default;
 
 void IOComponent::LoadScoreFromDrive()
 {
