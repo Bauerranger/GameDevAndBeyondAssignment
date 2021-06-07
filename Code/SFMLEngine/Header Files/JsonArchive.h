@@ -3,6 +3,8 @@
 #include "IArchive.h"
 #include <nlohmann/json.hpp>
 
+// Unused
+
 using JSONType = nlohmann::ordered_json;
 
 class JsonOutputArchive : public IArchive

@@ -11,6 +11,18 @@ TextComponent::~TextComponent()
 	delete m_Text;
 }
 
+///////////////////////////////////Utility
+void TextComponent::CenterText()
+{
+	// TODO Center text does not work find out why
+	sf::FloatRect textRect = m_Text->getLocalBounds();
+	m_Text->setOrigin(textRect.left + textRect.width / 2.0f,
+		textRect.top + textRect.height / 2.0f);
+}
+
+
+///////////////////////////////////Setter
+
 void TextComponent::SetFont(const std::string font)
 {
 	m_Font = new sf::Font();
@@ -39,13 +51,6 @@ void TextComponent::SetColor(const unsigned char red, const unsigned char green,
 void TextComponent::SetPosition(const float X, const float Y)
 {
 	m_Text->setPosition(X, Y);
-}
-
-void TextComponent::CenterText()
-{
-	sf::FloatRect textRect = m_Text->getLocalBounds();
-	m_Text->setOrigin(	textRect.left + textRect.width / 2.0f,
-						textRect.top + textRect.height / 2.0f);
 }
 
 void TextComponent::SetVisibilityOnStateChange()

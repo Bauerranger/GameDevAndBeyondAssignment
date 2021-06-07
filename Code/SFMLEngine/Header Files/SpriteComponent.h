@@ -3,6 +3,7 @@
 #include <string>
 #include "IComponent.h"
 
+///////////////////////////////////SFML
 //forward declaration, so that we don't need to include SFML in Game Project
 namespace sf
 {
@@ -17,29 +18,28 @@ public:
 	~SpriteComponent();
 
 public:
+	///////////////////////////////////Sprite
+
 	void CreateSprite(std::string url);
-	//need to return the Sprite here so that Window can render it
 	const sf::Sprite* GetSprite() { return m_Sprite; }
-	//Set the Position of the Sprite
+
+	///////////////////////////////////Getter
+
 	void SetPosition(const float X, const float Y);
-	//Rotate a Sprite to a specific Rotation
 	void SetRotation(const float RotationInDegree);
-	//Return the Position
-	void GetPosition(float& X, float& Y);
-	//Return the Rotation
-	void GetRotation(float& RotationInDegree);
-	//Return the Size
-	void GetSize(unsigned int& Width, unsigned int& Height);
-	//Set whether the sprite can be seen or not
 	void SetVisible(bool visible);
-	//Get whether the sprite can be seen or not
-	void GetVisible(bool& visible);
-	//Sets the color of the sprite
 	void SetColor(const int blockKey);
 
-	//check if the Sprite is Colliding with another Sprite
+	///////////////////////////////////Setter
+
+	void GetPosition(float& X, float& Y);
+	void GetRotation(float& RotationInDegree);
+	void GetSize(unsigned int& Width, unsigned int& Height);
+	void GetVisible(bool& visible);
+
+	///////////////////////////////////Collision
+
 	const bool IsCollidingWith(std::shared_ptr<SpriteComponent> otherSprite) const;
-	//check if the Sprite is Colliding with a fixed Rectangle
 	const bool IsCollidingWith(const float left, const float top, const float width, const float height) const;
 
 private:

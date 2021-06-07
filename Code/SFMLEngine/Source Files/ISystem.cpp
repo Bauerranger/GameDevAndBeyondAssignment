@@ -1,14 +1,6 @@
 #include "../Header Files/ISystem.h"
 
-void ISystem::Update(Engine* engine, float dt)
-{
-
-}
-
-void ISystem::Init(Engine* engine)
-{
-
-}
+///////////////////////////////////////////////////// Entities
 
 void ISystem::AddEntity(std::shared_ptr<Entity> entity)
 {

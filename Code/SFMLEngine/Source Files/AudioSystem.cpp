@@ -9,14 +9,28 @@ AudioSystem::AudioSystem()
 
 AudioSystem::~AudioSystem() 
 {
+	// Add events
 	m_Listener->RemoveCallback(m_EventFunctor);
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
 }
 
 void AudioSystem::AddEntity(std::shared_ptr<Entity> entity)
 {
+	// Remove events
 	ISystem::AddEntity(entity);
 	entity->GetComponent<AudioComponent>()->PlayAudio();
+}
+
+////////////////////////////////////////////////////////////////////////////////////// ISystem
+
+void AudioSystem::Init(Engine* engine)
+{
+	// Binds this event here because there would be an error because of multi threading / timing
+	m_EventFunctor = std::bind(&AudioSystem::OnEvent, this, std::placeholders::_1);
+	m_Listener = std::make_shared<EventHandler>();
+	m_Listener->AddCallback(m_EventFunctor);
+
+	EventManager::GetInstance().AddEventListener(m_Listener);
 }
 
 bool AudioSystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
@@ -32,26 +46,31 @@ void AudioSystem::Update(Engine* engine, float dt)
 {
 	std::lock_guard<std::mutex> lock(m_Mutex);
 	std::vector<std::shared_ptr<Entity>> copiedEntities = m_Entities;
+
 	for (std::vector<std::shared_ptr<Entity>>::iterator entityItr = copiedEntities.begin(); entityItr != copiedEntities.end();)
 	{
 		std::shared_ptr<Entity> entity = *entityItr;
+
+		// sometimes the entity gets erased before it can be updated for some reason
+		// TODO: Find Multi threading problem
+		if (entity == nullptr) 
+		{
+			++entityItr;
+			break;
+		}
+
 		if (!UpdateSingleEntity(engine, entity, dt))
 		{
 			m_Mutex.unlock();
 			engine->RemoveEntity(entity);
 			m_Mutex.lock();
 		}
+
 		++entityItr;
 	}
 }
 
-void AudioSystem::Init(Engine* engine) 
-{
-	m_Listener = std::make_shared<EventHandler>();
-	m_EventFunctor = std::bind(&AudioSystem::OnEvent, this, std::placeholders::_1);
-	m_Listener->AddCallback(m_EventFunctor);
-	EventManager::GetInstance().AddEventListener(m_Listener);
-}
+////////////////////////////////////////////////////////////////////////////////////// Entity logic
 
 inline bool AudioSystem::UpdateSingleEntity(Engine* engine, std::shared_ptr<Entity> entity, float dt)
 {
@@ -59,6 +78,8 @@ inline bool AudioSystem::UpdateSingleEntity(Engine* engine, std::shared_ptr<Enti
 	component = entity->GetComponent<AudioComponent>();
 	return !component->AudioIsFinished();
 }
+
+////////////////////////////////////////////////////////////////////////////////////// Sound informations
 
 void AudioSystem::PlayMusic()
 {
@@ -100,6 +121,8 @@ void AudioSystem::PlayEnd()
 		Engine::Instance()->AddEntity(entity);
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////// Events
 
 void AudioSystem::OnEvent(std::shared_ptr<IEvent> event)
 {

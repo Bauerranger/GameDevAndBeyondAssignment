@@ -38,13 +38,15 @@ public:
 	///////////////////////////////////////////////////// Singleton
 	static Engine* Instance();
 public:
+	///////////////////////////////////////////////////// Multi threading
+	void Update();
+	void UpdateWorkerSystems();
+	void UpdateRenderSystems();
+
 	///////////////////////////////////////////////////// Window handling
 	const bool IsRunning() { return m_IsRunning; };
 	void CloseApplication() { m_IsRunning = false; };
-	void Update();
 
-	void UpdateWorkerSystems();
-	void UpdateRenderSystems();
 
 	///////////////////////////////////////////////////// Rendering
 	void Draw();

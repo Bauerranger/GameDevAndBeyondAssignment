@@ -13,6 +13,8 @@ public:
 
 using EventFunctor = std::function<void(std::shared_ptr<IEvent>)>;
 
+///////////////////////////////////////////////////// Interface
+
 class IEventHandler
 {
 public:
@@ -27,11 +29,18 @@ private:
 	std::vector<EventFunctor> m_Callbacks;
 };
 
+///////////////////////////////////////////////////// Manager
+
 class EventManager
 {
 public:
 	EventManager();
 	~EventManager();
+
+	EventManager(const EventManager&) = delete; //delete copy constructor
+	EventManager& operator=(const EventManager&) = delete; //delete copy operator
+
+	///////////////////////////////////////////////////// Singleton
 
 	static EventManager& GetInstance()
 	{
@@ -39,10 +48,10 @@ public:
 		return _instance;
 	}
 
-	EventManager(const EventManager&) = delete; //delete copy constructor
-	EventManager& operator=(const EventManager&) = delete; //delete copy operator
-
 public:
+
+	///////////////////////////////////////////////////// Logic
+
 	void AddEventListener(std::shared_ptr<IEventHandler> listener);
 	void RemoveEventListener(std::shared_ptr<IEventHandler> listener);
 	void PushEvent(std::shared_ptr<IEvent> event);

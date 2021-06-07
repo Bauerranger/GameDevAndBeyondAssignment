@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iostream>
 
+////////////////////////////////////////////////////////////////////////////////////// Singleton
+
 Engine* Engine::s_pInstance = nullptr;
 
 Engine* Engine::Instance()
@@ -35,6 +37,8 @@ Engine::~Engine()
 	}
 }
 
+///////////////////////////////////////////////////// Multi threading
+
 void Engine::Update()
 {
 	m_Time->Restart();
@@ -51,12 +55,15 @@ void Engine::Update()
 			m_IsRunning = false;
 			return;
 		}
+
 		for (const std::shared_ptr<ISystem>& system : m_DirectSystems)
 		{
 			system->Update(this, m_dt);
 		}
+
 		//update all events
 		EventManager::GetInstance().Update();
+
 		//at the end of the update, decrement the accumulator by the fixed time
 		m_AccumulatedTime -= m_dt;
 	}
@@ -105,7 +112,7 @@ void Engine::UpdateRenderSystems()
 	}
 }
 
-
+///////////////////////////////////////////////////// Rendering
 
 void Engine::Draw()
 {
@@ -113,6 +120,8 @@ void Engine::Draw()
 	m_RenderSystem->Draw(m_Window);
 	m_Window->EndDraw();
 }
+
+///////////////////////////////////////////////////// Input handling
 
 bool Engine::IsMousePressed(MouseButton button)
 {
@@ -129,6 +138,8 @@ void Engine::GetCursorPosition(float& X, float& Y) const
 	InputHelper::GetCursorPosition(this, X, Y);
 }
 
+///////////////////////////////////////////////////// Game State
+
 void Engine::SetGameState(eGameState state)
 {
 	m_GameState = state;
@@ -137,10 +148,14 @@ void Engine::SetGameState(eGameState state)
 	EventManager::GetInstance().PushEvent(changeEvent);
 }
 
+///////////////////////////////////////////////////// Time handling
+
 const float Engine::GetElapsedTimeAsSeconds()
 {
 	return m_Time->GetElapsedTimeAsSeconds();
 }
+
+///////////////////////////////////////////////////// ECS
 
 void Engine::AddEntity(std::shared_ptr<Entity> entity)
 {
@@ -205,27 +220,37 @@ void Engine::AddSystem(std::shared_ptr<ISystem> system, eThreadImportance import
 	switch (importance)
 	{
 	case eThreadImportance::direct:
+
 		if (std::find(m_DirectSystems.begin(), m_DirectSystems.end(), system) != m_DirectSystems.end())
 		{
 			return;
 		}
 		m_DirectSystems.push_back(system);
+
 		break;
+
 	case eThreadImportance::worker:
+
 		if (std::find(m_WorkerSystems.begin(), m_WorkerSystems.end(), system) != m_WorkerSystems.end())
 		{
 			return;
 		}
+
 		m_WorkerSystems.push_back(system);
+
 		break;
 	case eThreadImportance::render:
+
 		if (std::find(m_RenderSystems.begin(), m_RenderSystems.end(), system) != m_RenderSystems.end())
 		{
 			return;
 		}
+
 		m_RenderSystems.push_back(system);
+
 		break;
 	default:
+
 		break;
 	}
 
@@ -266,6 +291,8 @@ const std::shared_ptr<Window> Engine::GetWindow() const
 {
 	return m_Window;
 }
+
+///////////////////////////////////////////////////// Window
 
 void Engine::SetViewCenter(float X, float Y)
 {

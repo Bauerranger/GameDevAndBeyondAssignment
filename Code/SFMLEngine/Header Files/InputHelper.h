@@ -4,6 +4,7 @@
 
 class Engine;
 
+///////////////////////////////////////////////////// Mouse
 //this is copied from SFML/Window/Mouse.hpp
 enum MouseButton
 {
@@ -15,6 +16,9 @@ enum MouseButton
 
 	ButtonCount ///< Keep last -- the total number of mouse buttons
 };
+
+
+///////////////////////////////////////////////////// Keyboard
 //this is copied from SFML/Window/Keyboard.hpp
 enum Key
 {
@@ -135,9 +139,15 @@ enum Key
 class InputHelper
 {
 public:
+
+	///////////////////////////////////////////////////// Mouse
+
 	static bool IsMousePressed(MouseButton button);
-	static bool IsKeyPressed(Key key);
 	static void GetCursorPosition(const Engine* engine, float& X, float& Y);
+
+	///////////////////////////////////////////////////// Keyboard
+
+	static bool IsKeyPressed(Key key);
 	static void GetInput(char& input);
 	static void SetInput(char input);
 };

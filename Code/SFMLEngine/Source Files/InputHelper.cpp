@@ -2,14 +2,11 @@
 #include "../Header Files/Engine.h"
 #include <SFML/Graphics.hpp>
 
+///////////////////////////////////////////////////// Mouse
+
 bool InputHelper::IsMousePressed(MouseButton button)
 {
 	return sf::Mouse::isButtonPressed((sf::Mouse::Button)button);
-}
-
-bool InputHelper::IsKeyPressed(Key key)
-{
-	return sf::Keyboard::isKeyPressed((sf::Keyboard::Key)key);
 }
 
 void InputHelper::GetCursorPosition(const Engine* engine, float& X, float& Y)
@@ -24,6 +21,13 @@ void InputHelper::GetCursorPosition(const Engine* engine, float& X, float& Y)
 
 	X = position.x + viewX;
 	Y = position.y + viewY;
+}
+
+///////////////////////////////////////////////////// Keyboard
+
+bool InputHelper::IsKeyPressed(Key key)
+{
+	return sf::Keyboard::isKeyPressed((sf::Keyboard::Key)key);
 }
 
 char m_Input;

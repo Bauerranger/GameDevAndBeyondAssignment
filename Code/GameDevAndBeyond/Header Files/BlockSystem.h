@@ -5,6 +5,9 @@
 #include "Events.h"
 #include <map> 
 
+#define VIEWSIZEX 3
+#define SPAWNPOSITIONOFFSET 4
+
 class BlockSystem : public ISystem
 {
 public:

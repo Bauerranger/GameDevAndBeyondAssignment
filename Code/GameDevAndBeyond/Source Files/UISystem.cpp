@@ -8,6 +8,7 @@
 
 UISystem::UISystem()
 {
+	// add Events 
 	m_Listener = std::make_shared<EventHandler>();
 	m_EventFunctor = std::bind(&UISystem::OnEvent, this, std::placeholders::_1);
 	m_Listener->AddCallback(m_EventFunctor);
@@ -16,8 +17,16 @@ UISystem::UISystem()
 
 UISystem::~UISystem()
 {
+	// Remove events
 	EventManager::GetInstance().RemoveEventListener(m_Listener);
 	m_Listener->RemoveCallback(m_EventFunctor);
+}
+
+////////////////////////////////////////////////////////////////////////////////////// ISystem
+
+void UISystem::Init(Engine* engine)
+{
+	LoadStartUI();
 }
 
 bool UISystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
@@ -33,6 +42,7 @@ bool UISystem::DoesEntityMatch(std::shared_ptr<Entity> entity)
 	}
 	return false;
 }
+
 // TODO: only update when needed
 void UISystem::Update(Engine* engine, float dt)
 {
@@ -67,38 +77,14 @@ void UISystem::Update(Engine* engine, float dt)
 			{
 				textComp->SetSize(32);
 				int highscore = 0;
-				/*std::string highscoreChampion;
-				iOComp->GetScore(highscoreChampion, highscore);
-				char input = A;
-				InputHelper::GetInput(input);
-				if (isalpha(input))
-				{
-					m_Name = m_Name + input;
-				}
-
-				if (highscore >= m_Score)
-				{
-					textComp->SetText("Current highscore: " + std::to_string(highscore) + " by: " + highscoreChampion);
-				}*/
-				//if (highscore < m_Score)
-				//{
 				textComp->SetText("YOUR SCORE: " + std::to_string(m_Score));
-				/*if (engine->IsKeyPressed(Key::Enter))
-				{
-					iOComp->SetScore(m_Name, m_Score);
-					iOComp->SaveScoreToDrive();
-				}*/
-				//}
 			}
 		}
 		++entityItr;
 	}
 }
 
-void UISystem::Init(Engine* engine)
-{
-	LoadStartUI();
-}
+////////////////////////////////////////////////////////////////////////////////////// UI logic
 
 void UISystem::LoadStartUI()
 {
@@ -107,7 +93,8 @@ void UISystem::LoadStartUI()
 		int windowSizeX = 0;
 		int windowSizeY = 0;
 		Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
-		// For some reason the center does not center
+
+		// for some reason windowSizeX / 2 does not center the text
 		int posX = windowSizeX / 2 - 50;
 		int posY = windowSizeY / 2;
 
@@ -132,11 +119,12 @@ void UISystem::LoadStartUI()
 
 		CreateTextEntity(attributionUI, 255, 255, 255, 255,
 			"Tetris Song: Bogozi, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons",
-			true, posX, posY, 12, eGameState::start);
+			true, posX, posY, 12, eGameState::start); // the content of this text has to be this for licensing reasons
 
 		Engine::Instance()->AddEntity(attributionUI);
 		m_AttributionUI = attributionUI;
 	}
+
 	// Load Score Text
 	{
 		std::shared_ptr<Entity> scoreEntity = std::make_shared<Entity>();
@@ -148,14 +136,18 @@ void UISystem::LoadStartUI()
 
 		Engine::Instance()->AddEntity(scoreEntity);
 	}
+
 	// Load High Score Text
 	{
 		int windowSizeX = 0;
 		int windowSizeY = 0;
 		Engine::Instance()->GetWindow()->GetWindowSize(windowSizeX, windowSizeY);
+
 		int posX = windowSizeX / 2 - 300;
 		int posY = windowSizeY / 2;
+
 		std::shared_ptr<Entity> iOEntity = std::make_shared<Entity>();
+
 		CreateTextEntity(iOEntity, 255, 255, 255, 255,
 			"IO", true, posX, posY, 24,
 			eGameState::end);
@@ -166,8 +158,11 @@ void UISystem::LoadStartUI()
 	}
 }
 
-void UISystem::CreateTextEntity(std::shared_ptr<Entity> entity, const int red, const int green, const int blue, const int alpha, const std::string text, const bool centerText,
-	const int posX, const int posY, const int textSize, const eGameState visibleGameState)
+void UISystem::CreateTextEntity(	std::shared_ptr<Entity> entity, 
+									const int red, const int green, const int blue, const int alpha, 
+									const std::string text, const bool centerText,
+									const int posX, const int posY, const int textSize, 
+									const eGameState visibleGameState)
 {
 	std::shared_ptr<TextComponent> textComponent = entity->AddComponent<TextComponent>();
 
@@ -176,12 +171,14 @@ void UISystem::CreateTextEntity(std::shared_ptr<Entity> entity, const int red, c
 	textComponent->SetText(text);
 	if (centerText)
 		textComponent->CenterText();
-	// For some reason the center does not center
+	// TODO: For some reason center text does not work
 	textComponent->SetPosition(float(posX), float(posY));
 	textComponent->SetSize(textSize);
 	textComponent->SetVisibleState(visibleGameState);
 	textComponent->SetVisibilityOnStateChange();
 }
+
+////////////////////////////////////////////////////////////////////////////////////// Events
 
 void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 {
@@ -208,11 +205,15 @@ void UISystem::OnEvent(std::shared_ptr<IEvent> event)
 			{
 				return;
 			}
+
+			// Makes UI visible / invisible
 			std::shared_ptr<Entity> entity = *entityItr;
 			std::shared_ptr<TextComponent> textComp = entity->GetComponent<TextComponent>();
 			textComp->SetVisibilityOnStateChange();
 			entityItr++;
 		}
+
+		// Sets visibility for game text
 		eGameState state;
 		Engine::Instance()->GetGameState(state);
 		if (state == eGameState::start)

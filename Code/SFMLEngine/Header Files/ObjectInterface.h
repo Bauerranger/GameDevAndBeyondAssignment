@@ -1,5 +1,7 @@
 #pragma once
 
+// Unused
+
 struct IArchive;
 
 struct ObjectInterface

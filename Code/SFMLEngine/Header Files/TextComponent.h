@@ -19,24 +19,22 @@ public:
 	~TextComponent();
 
 public:
-	// set the Text
-	void SetFont(const std::string font);
-	// set the Text
-	void SetText(const std::string text);
-	// Set the CharacterSize
-	void SetSize(const int size);
-	// Set the Text's Color
-	void SetColor(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha = 255);
-	// need to return the Text here so that Window can render it
+
+	///////////////////////////////////Utility
+
 	const sf::Text* GetText() { return m_Text; }
-	// Set the Position of the Text
-	void SetPosition(const float X, const float Y);
-	// Center text
 	void CenterText();
-	// Set in which game state the text is visible
+
+	///////////////////////////////////Setter
+
+	void SetFont(const std::string font);
+	void SetText(const std::string text);
+	void SetSize(const int size);
+	void SetColor(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha = 255);
+	void SetPosition(const float X, const float Y);
 	void SetVisibleState(eGameState state) { m_VisibleState = state; }
-	// Sets visibility according to game state
 	void SetVisibilityOnStateChange();
+
 private:
 	sf::Text* m_Text = nullptr;
 	sf::Font* m_Font = nullptr;

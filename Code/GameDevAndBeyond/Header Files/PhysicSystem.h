@@ -10,6 +10,7 @@ public:
 	~PhysicSystem();
 	//ISystem
 public:
+	void Init(Engine* engine) override {}; // unused
 	bool DoesEntityMatch(std::shared_ptr<Entity> entity) override;
 	void Update(Engine* engine, float dt) override;
 	

@@ -3,6 +3,8 @@
 #include <vector>
 #include "IComponent.h"
 
+// Unused
+
 struct Tile
 {
 	float X;

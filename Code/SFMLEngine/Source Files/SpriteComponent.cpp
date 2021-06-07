@@ -10,9 +10,10 @@ SpriteComponent::~SpriteComponent()
 	delete m_Sprite;
 }
 
+///////////////////////////////////Sprite
+
 void SpriteComponent::CreateSprite(std::string url)
 {
-	//dereference the pointer, so that we can access it via &
 	sf::Texture* texture = TextureManager::GetInstance().GetTexture(url);
 	m_Sprite = new sf::Sprite(*texture);
 
@@ -20,20 +21,14 @@ void SpriteComponent::CreateSprite(std::string url)
 	unsigned int height = 0;
 
 	sf::Vector2f origin;
+
 	origin.x = texture->getSize().x / 2;
 	origin.y = texture->getSize().y / 2;
+
 	m_Sprite->setOrigin(origin);
 }
 
-void SpriteComponent::SetPosition(const float X, const float Y)
-{
-	m_Sprite->setPosition(X, Y);
-}
-
-void SpriteComponent::SetRotation(const float RotationInDegree)
-{
-	m_Sprite->setRotation(RotationInDegree);
-}
+///////////////////////////////////Getter
 
 void SpriteComponent::GetPosition(float& X, float& Y)
 {
@@ -53,14 +48,26 @@ void SpriteComponent::GetSize(unsigned int& Width, unsigned int& Height)
 	Height = texture->getSize().y;
 }
 
-void SpriteComponent::SetVisible(bool visible)
-{
-	m_Visible = visible;
-}
-
 void SpriteComponent::GetVisible(bool& visible)
 {
 	visible = m_Visible;
+}
+
+///////////////////////////////////Setter
+
+void SpriteComponent::SetPosition(const float X, const float Y)
+{
+	m_Sprite->setPosition(X, Y);
+}
+
+void SpriteComponent::SetRotation(const float RotationInDegree)
+{
+	m_Sprite->setRotation(RotationInDegree);
+}
+
+void SpriteComponent::SetVisible(bool visible)
+{
+	m_Visible = visible;
 }
 
 void SpriteComponent::SetColor(const int blockKey)
@@ -92,6 +99,8 @@ void SpriteComponent::SetColor(const int blockKey)
 		break;
 	}
 }
+
+///////////////////////////////////Collision
 
 const bool SpriteComponent::IsCollidingWith(std::shared_ptr<SpriteComponent> otherSprite) const
 {
